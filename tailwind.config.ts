@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -56,6 +57,26 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        // CMS Status Colors
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        // CMS Table Colors  
+        table: {
+          header: "hsl(var(--table-header))",
+          "row-hover": "hsl(var(--table-row-hover))",
+        },
+        // CMS Tag Colors
+        tag: {
+          active: "hsl(var(--tag-active))",
+          draft: "hsl(var(--tag-draft))",
+          text: "hsl(var(--tag-text))",
         },
       },
       borderRadius: {
