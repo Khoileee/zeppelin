@@ -171,10 +171,11 @@ export default function UserForm({ isOpen, onClose, onSuccess, editUser }: UserF
         });
 
         if (error) {
-          if (error.code === '23505') {
-            if (error.message.includes('user_name')) {
+          const pgError = error as { code?: string; message?: string };
+          if (pgError.code === '23505') {
+            if (pgError.message?.includes('user_name')) {
               throw new Error('Tên đăng nhập đã tồn tại');
-            } else if (error.message.includes('email')) {
+            } else if (pgError.message?.includes('email')) {
               throw new Error('Email đã tồn tại');
             }
           }
