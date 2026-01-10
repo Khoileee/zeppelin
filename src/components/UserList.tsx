@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, UserPlus, Edit2, Power, PowerOff, AlertTriangle, X } from 'lucide-react';
+import { Search, Filter, UserPlus, Edit2, Power, PowerOff, AlertTriangle, X, RotateCcw } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { UserManagement } from '../lib/database.types';
 
@@ -137,6 +137,16 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end">
+        <button
+          onClick={onAddUser}
+          className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 transition-all shadow-sm"
+        >
+          <UserPlus size={18} />
+          <span>Thêm người dùng</span>
+        </button>
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
           <div className="flex-1 w-full md:w-auto">
@@ -159,13 +169,6 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
             >
               <Filter size={18} />
               <span>Bộ lọc</span>
-            </button>
-            <button
-              onClick={onAddUser}
-              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-slate-700 to-slate-800 text-white rounded-lg hover:from-slate-800 hover:to-slate-900 transition-all shadow-sm"
-            >
-              <UserPlus size={18} />
-              <span>Thêm người dùng</span>
             </button>
           </div>
         </div>
@@ -234,6 +237,30 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
                   className="flex-1 px-2 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-transparent outline-none bg-white text-sm"
                 />
               </div>
+            </div>
+
+            <div className="flex items-end gap-2 md:col-span-4 justify-end mt-2">
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('all');
+                  setGroupFilter('');
+                  setRoleFilter('all');
+                  setDateFromFilter('');
+                  setDateToFilter('');
+                }}
+                className="flex items-center gap-2 px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors text-slate-600"
+              >
+                <RotateCcw size={16} />
+                <span>Làm mới</span>
+              </button>
+              <button
+                onClick={() => applyFilters()}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors"
+              >
+                <Search size={16} />
+                <span>Tìm kiếm</span>
+              </button>
             </div>
           </div>
         )}
