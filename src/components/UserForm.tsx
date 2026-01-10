@@ -211,36 +211,6 @@ export default function UserForm({ isOpen, onClose, onSuccess, editUser }: UserF
     }));
   };
 
-  const handleDeactivate = async () => {
-    if (!editUser || !confirm('Bạn có chắc chắn muốn ngừng kích hoạt người dùng này?')) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase
-        .from('users_management')
-        .update({ is_active: false })
-        .eq('user_id', editUser.user_id);
-
-      if (error) throw error;
-
-      setNotification({
-        type: 'success',
-        message: 'Đã ngừng kích hoạt người dùng',
-      });
-
-      setTimeout(() => {
-        onSuccess();
-        onClose();
-      }, 1500);
-    } catch (error) {
-      setNotification({
-        type: 'error',
-        message: 'Có lỗi xảy ra khi ngừng kích hoạt',
-      });
-    }
-  };
-
   if (!isOpen) return null;
 
   return (
@@ -491,16 +461,29 @@ export default function UserForm({ isOpen, onClose, onSuccess, editUser }: UserF
                       />
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-slate-600 mb-2">
-                        Ngày tạo
-                      </label>
-                      <input
-                        type="text"
-                        value={new Date(editUser.created_date).toLocaleString('vi-VN')}
-                        disabled
-                        className="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
-                      />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-2">
+                          Ngày tạo
+                        </label>
+                        <input
+                          type="text"
+                          value={new Date(editUser.created_date).toLocaleString('vi-VN')}
+                          disabled
+                          className="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-2">
+                          Ngày cập nhật
+                        </label>
+                        <input
+                          type="text"
+                          value={new Date(editUser.updated_date).toLocaleString('vi-VN')}
+                          disabled
+                          className="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
+                        />
+                      </div>
                     </div>
                   </>
                 )}
@@ -509,18 +492,7 @@ export default function UserForm({ isOpen, onClose, onSuccess, editUser }: UserF
           </div>
         </form>
 
-        <div className="border-t border-slate-200 px-6 py-4 bg-slate-50 flex items-center justify-between">
-          <div>
-            {editUser && editUser.is_active && (
-              <button
-                type="button"
-                onClick={handleDeactivate}
-                className="px-4 py-2.5 border border-rose-200 text-rose-600 rounded-lg hover:bg-rose-50 transition-colors font-medium"
-              >
-                Ngừng kích hoạt
-              </button>
-            )}
-          </div>
+        <div className="border-t border-slate-200 px-6 py-4 bg-slate-50 flex items-center justify-end">
           <div className="flex gap-3">
             <button
               type="button"

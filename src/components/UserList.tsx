@@ -25,6 +25,8 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [groupFilter, setGroupFilter] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'user'>('all');
+  const [dateFromFilter, setDateFromFilter] = useState('');
+  const [dateToFilter, setDateToFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
@@ -37,7 +39,7 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
 
   useEffect(() => {
     applyFilters();
-  }, [users, searchTerm, statusFilter, groupFilter, roleFilter]);
+  }, [users, searchTerm, statusFilter, groupFilter, roleFilter, dateFromFilter, dateToFilter]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -82,6 +84,18 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
 
     if (roleFilter !== 'all') {
       filtered = filtered.filter(user => user.zeppelin_role === roleFilter);
+    }
+
+    if (dateFromFilter) {
+      const fromDate = new Date(dateFromFilter);
+      fromDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter(user => new Date(user.created_date) >= fromDate);
+    }
+
+    if (dateToFilter) {
+      const toDate = new Date(dateToFilter);
+      toDate.setHours(23, 59, 59, 999);
+      filtered = filtered.filter(user => new Date(user.created_date) <= toDate);
     }
 
     setFilteredUsers(filtered);
@@ -157,7 +171,7 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
         </div>
 
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="mt-4 pt-4 border-t border-slate-200 grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-600 mb-2">
                 Trạng thái hoạt động
@@ -200,6 +214,27 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
                 <option value="user">User</option>
               </select>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-2">
+                Ngày tạo
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={dateFromFilter}
+                  onChange={(e) => setDateFromFilter(e.target.value)}
+                  className="flex-1 px-2 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-transparent outline-none bg-white text-sm"
+                />
+                <span className="text-slate-400 text-sm">-</span>
+                <input
+                  type="date"
+                  value={dateToFilter}
+                  onChange={(e) => setDateToFilter(e.target.value)}
+                  className="flex-1 px-2 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-transparent outline-none bg-white text-sm"
+                />
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -238,6 +273,9 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Ngày tạo
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Ngày cập nhật
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Hành động
@@ -299,6 +337,9 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
                     </td>
                     <td className="px-4 py-3 text-sm text-slate-600">
                       {formatDate(user.created_date)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-600">
+                      {formatDate(user.updated_date)}
                     </td>
                     <td className="px-4 py-3 text-sm text-right">
                       <div className="flex items-center justify-end gap-1">
