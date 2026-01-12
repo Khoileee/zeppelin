@@ -1,7 +1,141 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, UserPlus, Edit2, Power, PowerOff, AlertTriangle, X, RotateCcw } from 'lucide-react';
+import { Search, Filter, UserPlus, Edit2, Power, PowerOff, AlertTriangle, X, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { UserManagement } from '../lib/database.types';
+
+// Fake data
+const FAKE_USERS: UserManagement[] = [
+  {
+    user_id: 'fake-1',
+    user_name: 'usr_khoiln1',
+    email: 'khoiln1@company.com',
+    phone_number: '0901234567',
+    is_active: true,
+    group_names: ['grp_de'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.10'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake1',
+    created_date: '2025-12-15T08:30:00Z',
+    updated_date: '2025-12-20T10:00:00Z',
+  },
+  {
+    user_id: 'fake-2',
+    user_name: 'usr_anhhv13',
+    email: 'anhhv13@company.com',
+    phone_number: '0912345678',
+    is_active: true,
+    group_names: ['grp_ds'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.11'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake2',
+    created_date: '2025-11-20T09:15:00Z',
+    updated_date: '2025-12-01T14:30:00Z',
+  },
+  {
+    user_id: 'fake-3',
+    user_name: 'usr_hangttm9',
+    email: 'hangttm9@company.com',
+    phone_number: '0923456789',
+    is_active: true,
+    group_names: ['grp_deds'],
+    zeppelin_role: 'admin',
+    ips: ['192.168.1.12'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake3',
+    created_date: '2025-10-10T10:00:00Z',
+    updated_date: '2025-11-15T16:45:00Z',
+  },
+  {
+    user_id: 'fake-4',
+    user_name: 'usr_baont12',
+    email: 'baont12@company.com',
+    phone_number: '0934567890',
+    is_active: false,
+    group_names: ['grp_de', 'grp_ds'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.13'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake4',
+    created_date: '2025-09-05T11:30:00Z',
+    updated_date: '2025-10-20T09:00:00Z',
+  },
+  {
+    user_id: 'fake-5',
+    user_name: 'usr_quanpd9',
+    email: 'quanpd9@company.com',
+    phone_number: '0945678901',
+    is_active: true,
+    group_names: ['grp_admin'],
+    zeppelin_role: 'admin',
+    ips: ['192.168.1.14', '10.0.0.5'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake5',
+    created_date: '2025-08-12T14:00:00Z',
+    updated_date: '2025-09-25T11:20:00Z',
+  },
+  {
+    user_id: 'fake-6',
+    user_name: 'usr_toancv2',
+    email: 'toancv2@company.com',
+    phone_number: '0956789012',
+    is_active: true,
+    group_names: ['grp_de'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.15'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake6',
+    created_date: '2025-07-18T08:45:00Z',
+    updated_date: '2025-08-30T13:15:00Z',
+  },
+  {
+    user_id: 'fake-7',
+    user_name: 'usr_sonnh70',
+    email: 'sonnh70@company.com',
+    phone_number: '0967890123',
+    is_active: true,
+    group_names: ['grp_ds'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.16'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake7',
+    created_date: '2025-06-22T09:30:00Z',
+    updated_date: '2025-07-10T15:00:00Z',
+  },
+  {
+    user_id: 'fake-8',
+    user_name: 'usr_linhnt5',
+    email: 'linhnt5@company.com',
+    phone_number: '0978901234',
+    is_active: false,
+    group_names: ['grp_deds'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.17'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake8',
+    created_date: '2025-05-14T10:15:00Z',
+    updated_date: '2025-06-05T12:30:00Z',
+  },
+  {
+    user_id: 'fake-9',
+    user_name: 'usr_dungpv8',
+    email: 'dungpv8@company.com',
+    phone_number: '0989012345',
+    is_active: true,
+    group_names: ['grp_de', 'grp_admin'],
+    zeppelin_role: 'admin',
+    ips: ['192.168.1.18'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake9',
+    created_date: '2025-04-08T07:00:00Z',
+    updated_date: '2025-05-20T08:45:00Z',
+  },
+  {
+    user_id: 'fake-10',
+    user_name: 'usr_thuydth3',
+    email: 'thuydth3@company.com',
+    phone_number: '0990123456',
+    is_active: true,
+    group_names: ['grp_ds'],
+    zeppelin_role: 'user',
+    ips: ['192.168.1.19'],
+    shiro_hash: '$shiro1$SHA-256$500000$fake10',
+    created_date: '2025-03-25T11:45:00Z',
+    updated_date: '2025-04-15T10:00:00Z',
+  },
+];
 
 // Mapping giữa giá trị DB và tên hiển thị
 const GROUP_MAPPING: Record<string, string> = {
@@ -28,6 +162,8 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
   const [dateFromFilter, setDateFromFilter] = useState('');
   const [dateToFilter, setDateToFilter] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     user: UserManagement | null;
@@ -50,7 +186,11 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
         .order('created_date', { ascending: false });
 
       if (error) throw error;
-      setUsers(data || []);
+      // Kết hợp dữ liệu thực với fake data
+      const allUsers = [...(data || []), ...FAKE_USERS];
+      // Sắp xếp theo ngày tạo giảm dần
+      allUsers.sort((a, b) => new Date(b.created_date).getTime() - new Date(a.created_date).getTime());
+      setUsers(allUsers);
     } catch (error) {
       console.error('Lỗi khi tải danh sách người dùng:', error);
     } finally {
@@ -99,6 +239,7 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
     }
 
     setFilteredUsers(filtered);
+    setCurrentPage(1);
   };
 
   const openConfirmDialog = (user: UserManagement) => {
@@ -276,10 +417,13 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
             Không tìm thấy người dùng nào
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
             <table className="w-full">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-slate-50 border-b border-slate-200 sticky top-0 z-10">
                 <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    STT
+                  </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Tên đăng nhập
                   </th>
@@ -310,11 +454,16 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredUsers.map((user) => (
+                {filteredUsers
+                  .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                  .map((user, index) => (
                   <tr
                     key={user.user_id}
                     className="hover:bg-slate-50/50 transition-colors"
                   >
+                    <td className="px-4 py-3 text-sm text-slate-500">
+                      {(currentPage - 1) * itemsPerPage + index + 1}
+                    </td>
                     <td className="px-4 py-3 text-sm font-medium text-slate-800">
                       {user.user_name}
                     </td>
@@ -397,6 +546,60 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {filteredUsers.length > 0 && (
+        <div className="flex items-center justify-end gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-slate-600">Hiển thị</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(Number(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="px-2 py-1.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-slate-400 focus:border-transparent outline-none bg-white text-sm"
+            >
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20}>20</option>
+            </select>
+            <span className="text-sm text-slate-600">bản ghi</span>
+          </div>
+          <span className="text-sm text-slate-600">
+            {Math.min((currentPage - 1) * itemsPerPage + 1, filteredUsers.length)} - {Math.min(currentPage * itemsPerPage, filteredUsers.length)} / {filteredUsers.length}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={18} className="text-slate-600" />
+            </button>
+            {Array.from({ length: Math.ceil(filteredUsers.length / itemsPerPage) }, (_, i) => i + 1).map(page => (
+              <button
+                key={page}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1.5 rounded-lg transition-colors text-sm font-medium ${
+                  currentPage === page
+                    ? 'bg-slate-700 text-white'
+                    : 'border border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(filteredUsers.length / itemsPerPage)))}
+              disabled={currentPage === Math.ceil(filteredUsers.length / itemsPerPage)}
+              className="p-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight size={18} className="text-slate-600" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Confirmation Dialog */}
       {confirmDialog.isOpen && confirmDialog.user && (
