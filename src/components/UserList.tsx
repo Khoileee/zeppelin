@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, UserPlus, Edit2, Power, PowerOff, AlertTriangle, X, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, UserPlus, Edit2, Power, PowerOff, AlertTriangle, X, RotateCcw, ChevronLeft, ChevronRight, Eye } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { UserManagement } from '../lib/database.types';
 
@@ -148,10 +148,11 @@ const GROUP_MAPPING: Record<string, string> = {
 interface UserListProps {
   onAddUser: () => void;
   onEditUser: (user: UserManagement) => void;
+  onViewUser: (user: UserManagement) => void;
   refreshTrigger: number;
 }
 
-export default function UserList({ onAddUser, onEditUser, refreshTrigger }: UserListProps) {
+export default function UserList({ onAddUser, onEditUser, onViewUser, refreshTrigger }: UserListProps) {
   const [users, setUsers] = useState<UserManagement[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserManagement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -509,6 +510,13 @@ export default function UserList({ onAddUser, onEditUser, refreshTrigger }: User
                     </td>
                     <td className="px-4 py-3 text-sm text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          onClick={() => onViewUser(user)}
+                          className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                          title="Xem chi tiết"
+                        >
+                          <Eye size={16} />
+                        </button>
                         <button
                           onClick={() => onEditUser(user)}
                           className="p-1.5 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"

@@ -2,11 +2,14 @@ import { useState } from 'react';
 import { Users, UserPlus } from 'lucide-react';
 import UserList from './components/UserList';
 import UserForm from './components/UserForm';
+import UserDetail from './components/UserDetail';
 import type { UserManagement } from './lib/database.types';
 
 function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [editUser, setEditUser] = useState<UserManagement | null>(null);
+  const [viewUser, setViewUser] = useState<UserManagement | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const handleAddUser = () => {
@@ -19,9 +22,19 @@ function App() {
     setIsFormOpen(true);
   };
 
+  const handleViewUser = (user: UserManagement) => {
+    setViewUser(user);
+    setIsDetailOpen(true);
+  };
+
   const handleCloseForm = () => {
     setIsFormOpen(false);
     setEditUser(null);
+  };
+
+  const handleCloseDetail = () => {
+    setIsDetailOpen(false);
+    setViewUser(null);
   };
 
   const handleSuccess = () => {
@@ -57,6 +70,7 @@ function App() {
         <UserList
           onAddUser={handleAddUser}
           onEditUser={handleEditUser}
+          onViewUser={handleViewUser}
           refreshTrigger={refreshTrigger}
         />
 
@@ -65,6 +79,12 @@ function App() {
           onClose={handleCloseForm}
           onSuccess={handleSuccess}
           editUser={editUser}
+        />
+
+        <UserDetail
+          isOpen={isDetailOpen}
+          onClose={handleCloseDetail}
+          user={viewUser}
         />
       </div>
     </div>

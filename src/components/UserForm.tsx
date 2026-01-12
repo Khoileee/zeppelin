@@ -449,18 +449,6 @@ export default function UserForm({ isOpen, onClose, onSuccess, editUser }: UserF
 
                 {editUser && (
                   <>
-                    <div>
-                      <label className="block text-sm font-medium text-slate-600 mb-2">
-                        Shiro Hash
-                      </label>
-                      <input
-                        type="text"
-                        value={editUser.shiro_hash || '-'}
-                        disabled
-                        className="w-full px-4 py-2.5 border border-slate-200 rounded-lg bg-slate-100 text-slate-500 cursor-not-allowed"
-                      />
-                    </div>
-
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-slate-600 mb-2">
