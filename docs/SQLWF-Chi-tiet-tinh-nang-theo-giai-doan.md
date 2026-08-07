@@ -3,7 +3,7 @@
 
 > **Người viết:** Khôi (IT BA) · **Ngày:** 08/2026
 > **Tài liệu mẹ:** [SQLWF — Đề xuất Kiến trúc Data Management](./SQLWF-De-xuat-Kien-truc-Data-Management.md)
-> **Tham chiếu màn hình:** [SRS Metadata bảng](../metadata-bang/SRS_metadata_bang.md)
+> **Tham chiếu màn hình:** [SRS Metadata bảng](metadata-bang/SRS_metadata_bang.md)
 >
 > **Mục đích bản này:** tài liệu mẹ dừng ở mức "việc gì – ai làm – gỡ rào cản nào". Bản này trả lời tiếp: **trên tool hiển thị như thế nào, người dùng thao tác gì, nhập gì – ra gì, FE/BE đảm nhận phần nào.**
 >

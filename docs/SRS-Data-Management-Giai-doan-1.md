@@ -7,7 +7,7 @@
 > **Người tạo:** Khôi (IT BA)
 > **Hệ thống:** SQL Workflow (SQLWF)
 > **Tài liệu nền:** [Đề xuất Kiến trúc Data Management](./SQLWF-De-xuat-Kien-truc-Data-Management.md) · [Chi tiết tính năng theo giai đoạn](./SQLWF-Chi-tiet-tinh-nang-theo-giai-doan.md) · [Ví dụ chuyển đổi bảng sang Iceberg](./SQLWF-Vi-du-chuyen-doi-bang-sang-Iceberg.md)
-> **SRS liên quan:** [SRS Metadata bảng v3.8](../metadata-bang/SRS_metadata_bang.md)
+> **SRS liên quan:** [SRS Metadata bảng v3.8](metadata-bang/SRS_metadata_bang.md)
 
 **BẢNG GHI NHẬN THAY ĐỔI**
 
@@ -278,7 +278,7 @@ stop
 
 | Thuộc tính | Mô tả |
 |---|---|
-| Mã chức năng | FUNC-02 · 🔧 mở rộng FUNC-02 & FUNC-07 của [SRS Metadata bảng](../metadata-bang/SRS_metadata_bang.md) |
+| Mã chức năng | FUNC-02 · 🔧 mở rộng FUNC-02 & FUNC-07 của [SRS Metadata bảng](metadata-bang/SRS_metadata_bang.md) |
 | Actor | BDA |
 | Khu vực | Chi tiết bảng → nút **Download Metadata bảng** · tab **Quản lý upload** → **Import Table** |
 | Mô tả | Đưa 2 trường phân loại vào luồng Import/Download đã có, để quy hoạch hàng loạt bằng Excel |
