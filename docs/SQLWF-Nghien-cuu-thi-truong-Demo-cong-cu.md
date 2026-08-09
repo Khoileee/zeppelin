@@ -27,6 +27,10 @@
 >
 > **Một ngoại lệ cần phân biệt rõ:** 21/22 màn được dựng theo tài liệu của **đúng một sản phẩm có thật**. Riêng **[màn 16](#màn-16--phát-hiện-bất-thường-tự-động)** là **ảnh minh hoạ khái niệm chung của cả một nhóm sản phẩm** ("Data Observability" là **tên nhóm**, không phải tên tool) — ảnh đó đã ghi rõ điều này ngay trên thanh địa chỉ.
 
+> ⭐ **MỚI 09/08/2026 — [Phụ lục P5](#p5--ảnh-giao-diện-thật-chụp-trực-tiếp-từ-bản-demo-công-khai): 12 ảnh giao diện THẬT** chụp trực tiếp từ bản demo công khai của DataHub,
+> kèm bảng đối chiếu với thiết kế DMP. Ảnh trong phần thân tài liệu là **ảnh tự dựng lại** theo tài liệu chính thức —
+> P5 nêu rõ công cụ nào truy cập được ẩn danh, công cụ nào không và vì sao.
+
 > 🔎 **Đã rà soát lại toàn bộ theo tài liệu chính thức của từng sản phẩm.** Mỗi khẳng định trong tài liệu này được gắn mức xác thực — xem [Phụ lục P4](#p4--bảng-xác-thực-khẳng-định-nào-có-trong-tài-liệu-chính-thức). Đợt rà soát này đã **gỡ bỏ hoặc sửa lại 11 chỗ** không có căn cứ trong tài liệu gốc.
 
 **Khuôn trình bày mỗi màn hình:** *Màn này để làm gì · Trên màn có gì · Người dùng thao tác · Các trường phải khai · Kết quả nhận được · Đối chiếu với SQLWF.*
@@ -83,6 +87,7 @@
 
 **PHỤ LỤC**
 - [P4. Bảng xác thực: khẳng định nào có trong tài liệu chính thức](#p4--bảng-xác-thực-khẳng-định-nào-có-trong-tài-liệu-chính-thức)
+- ⭐ [P5. **Ảnh giao diện thật**, chụp trực tiếp từ bản demo công khai *(mới 09/08)*](#p5--ảnh-giao-diện-thật-chụp-trực-tiếp-từ-bản-demo-công-khai)
 - [P3. Nguồn tham khảo](#p3--nguồn-tham-khảo)
 
 </details>
@@ -1602,6 +1607,121 @@ Mọi khẳng định trong tài liệu này được gắn một trong bốn m�
 
 **dbt** *(tham khảo cho hướng gắn kiểm chất lượng vào quy trình biến đổi)*
 - [View documentation — dbt](https://docs.getdbt.com/docs/build/view-documentation) · [Discover data with Catalog](https://docs.getdbt.com/docs/explore/explore-projects)
+
+</details>
+
+---
+
+# P5 — ẢNH GIAO DIỆN THẬT, CHỤP TRỰC TIẾP TỪ BẢN DEMO CÔNG KHAI
+
+<details open>
+<summary><b>Vì sao có phụ lục này</b></summary>
+
+> ⚠️ **Đọc kỹ chỗ này.** Toàn bộ ảnh trong phần thân tài liệu *(thư mục `assets/thi-truong/`)* là **ảnh tự dựng lại**
+> dựa trên tài liệu chính thức của từng sản phẩm — nhằm minh hoạ **luồng thao tác và các trường thông tin**,
+> **không phải** ảnh chụp màn hình thật.
+>
+> Phụ lục này bổ sung **12 ảnh chụp trực tiếp** từ bản demo công khai của DataHub *(`demo.datahub.com`, truy cập ẩn danh, 09/08/2026)*
+> để đối chiếu: những gì tài liệu mô tả có đúng với sản phẩm thật hay không.
+
+**Kết quả thử truy cập bản demo công khai của từng công cụ**
+
+| Công cụ | Địa chỉ demo | Truy cập được ẩn danh | Ảnh thật |
+|---|---|:---:|:---:|
+| **DataHub** | `demo.datahub.com` | ✅ **Được** — vào thẳng, không cần đăng nhập | ✅ **12 ảnh** |
+| OpenMetadata | `sandbox.open-metadata.org` | ❌ Bắt buộc đăng nhập bằng tài khoản Google | — |
+| Soda Cloud | `cloud.soda.io` | ❌ Bắt buộc đăng nhập | — |
+| Apache Ranger | — | ❌ Không có bản demo công khai | — |
+| Amundsen | `demo.amundsen.io` | ❌ Không phản hồi | — |
+| Collibra | — | ❌ Chỉ demo có hẹn lịch với đội bán hàng | — |
+
+> 💡 **Với 5 công cụ còn lại**, ảnh trong tài liệu vẫn là ảnh tự dựng. Muốn có ảnh thật thì cần
+> *(a)* tài khoản đăng nhập của tổ chức, hoặc *(b)* dựng bản chạy thử nội bộ bằng Docker
+> — cả hai đều làm được nhưng cần quyết định về hạ tầng và thời gian.
+
+</details>
+
+<details open>
+<summary><b>DataHub — 12 màn hình thật</b></summary>
+
+### Màn khám phá dữ liệu
+
+![DataHub thật — kết quả tìm kiếm](assets/thi-truong-that/dh-real-02-search.png)
+
+**Đối chiếu với thiết kế DMP:** bố cục ba cột *(bộ lọc mặt bên trái · danh sách kết quả giữa · tóm tắt đối tượng bên phải)*
+là mẫu chuẩn của nhóm công cụ danh mục dữ liệu. Màn **1.1 Tìm kiếm toàn hệ thống** của DMP dùng cùng bố cục này.
+Đáng chú ý: DataHub hiện **số lượng theo nền tảng nguồn** ở cột trái — DMP hiện **số lượng theo loại đối tượng**,
+phù hợp hơn với yêu cầu GĐ2 vì BDA quản lý 7 nhóm đối tượng chứ không quản theo nền tảng.
+
+### Trang chi tiết một bảng
+
+![DataHub thật — hồ sơ bảng](assets/thi-truong-that/dh-real-07-dataset.png)
+
+**Đối chiếu:** DataHub chia tab theo *Columns · View Definition · Documentation · Lineage · Properties · Queries · Stats · Quality · Governance*.
+DMP gộp lại còn **6 tab** *(Tổng quan · Cột · Chất lượng · Nguồn gốc · Quyền · Lịch sử)* — ít tab hơn nhưng
+thêm tab **Quyền** mà DataHub không có, vì yêu cầu GĐ4 của BDA đòi hỏi nhìn được quyền ngay tại hồ sơ bảng.
+
+### Truy vết luồng dữ liệu
+
+![DataHub thật — Lineage Explorer](assets/thi-truong-that/dh-real-08-lineage.png)
+
+**Đối chiếu:** DataHub tách **Explorer** *(xem sơ đồ)* và **Impact Analysis** *(phân tích ảnh hưởng)* thành hai tab con —
+đúng cách DMP làm ở menu **2.3**. Điểm khác: DataHub cho **mở rộng từng nút để xem cột**;
+DMP hiện dừng ở mức bảng và cột, chưa có tương tác mở rộng — đây là hạng mục nên bổ sung khi dev thật.
+
+### Quản trị và phân loại
+
+![DataHub thật — tab Governance](assets/thi-truong-that/dh-real-10-governance.png)
+
+**Đối chiếu:** DataHub gom *Owners · Domain · Tags · Glossary Terms · Structured Properties* vào một tab.
+DMP tách **mức phân loại** và **nhãn dữ liệu nhạy cảm** thành hai trục riêng *(gap D1 trong tài liệu review)* —
+DataHub **không tách**, chỉ có một khái niệm Tag duy nhất. Đây là chỗ DMP **chặt hơn** vì yêu cầu GĐ4 của BDA
+đòi hỏi 4 mức phân loại tách khỏi nhãn loại dữ liệu nhạy cảm.
+
+### Chất lượng dữ liệu
+
+![DataHub thật — tab Quality](assets/thi-truong-that/dh-real-09-quality.png)
+
+### Từ điển nghiệp vụ
+
+![DataHub thật — Glossary](assets/thi-truong-that/dh-real-03-glossary.png)
+
+**Đối chiếu:** Từ điển của DataHub có phân cấp nhóm thuật ngữ. Từ điển của SQLWF *(menu 2.1 của DMP)*
+đã có **cờ CDE**, **steward tách khỏi owner** và **quy trình duyệt** — những thứ DataHub bản Core không có sẵn.
+Kết luận trong phần thân tài liệu rằng *"từ điển của SQLWF đầy đủ hơn mặt bằng thị trường"* **được xác nhận bằng ảnh thật**.
+
+### Miền dữ liệu và nhãn
+
+![DataHub thật — Domains](assets/thi-truong-that/dh-real-04-domains.png)
+
+![DataHub thật — Tags](assets/thi-truong-that/dh-real-05-tags.png)
+
+### Trang chủ và thống kê sử dụng
+
+![DataHub thật — trang chủ](assets/thi-truong-that/dh-real-01-home.png)
+
+![DataHub thật — Analytics](assets/thi-truong-that/dh-real-06-analytics.png)
+
+**Đối chiếu:** màn Analytics của DataHub thiên về **thống kê sử dụng công cụ** *(ai tìm gì, xem gì)*.
+Màn **8.1 Sức khoẻ dữ liệu** của DMP thiên về **chỉ số quản trị** *(bao nhiêu bảng có chủ, bao nhiêu cột đã che)* —
+khác mục đích, và phù hợp hơn với bộ chỉ số nghiệm thu mà BDA yêu cầu ở GĐ2 mục 10.
+
+### Hai màn còn lại
+
+![DataHub thật — Queries](assets/thi-truong-that/dh-real-11-queries.png)
+
+![DataHub thật — hồ sơ bảng nguồn Snowflake](assets/thi-truong-that/dh-real-12-dataset2.png)
+
+</details>
+
+<details open>
+<summary><b>Ba kết luận rút ra sau khi đối chiếu ảnh thật</b></summary>
+
+| # | Kết luận | Ý nghĩa với DMP |
+|:---:|---|---|
+| **1** | **Bố cục ba cột cho màn tìm kiếm và bố cục tab cho hồ sơ bảng là chuẩn chung của ngành** | Thiết kế DMP đi đúng mẫu quen thuộc, người dùng từng biết công cụ khác sẽ không bỡ ngỡ |
+| **2** | **DataHub không tách mức phân loại khỏi nhãn dữ liệu nhạy cảm** | Việc DMP tách 2 trục *(gap D1)* là **chặt hơn thị trường**, xuất phát từ yêu cầu pháp lý riêng của GĐ4 — nên nêu rõ khi trình bày |
+| **3** | **DataHub bản Core không có màn Quyền trong hồ sơ bảng, không có che dữ liệu, không có lọc theo dòng** | Ba tính năng này của DMP *(menu 5.2)* **không có sẵn trong công cụ nguồn mở phổ biến** — đây là phần phải tự xây, và cũng là phần tạo khác biệt |
 
 </details>
 

@@ -4,12 +4,19 @@
 | | |
 |---|---|
 | **Người thực hiện** | BA — Đội Tool, Phòng Phân tích Dữ liệu |
-| **Ngày** | 04/08/2026 |
-| **Phiên bản** | **2.1** — Đầy đủ 8 phần + phụ lục · 21 menu · **55 màn hình minh hoạ** |
+| **Ngày** | 04/08/2026 · **cập nhật 09/08/2026 sau đợt review đối chiếu yêu cầu BDA** |
+| **Phiên bản** | **3.0** — 8 module · **34 menu** *(21 menu gốc + 13 menu bổ sung sau review)* |
 | **Căn cứ** | ⭐ Toàn bộ cột *"SQLWF hiện có"* trong tài liệu này **lấy từ kết quả đọc mã nguồn**, không suy đoán — xem [Kiểm kê màn hình SQLWF](DMP-Kiem-ke-man-hinh-SQLWF.md) |
-| **Tài liệu liên quan** | [Nghiên cứu thị trường](SQLWF-Nghien-cuu-thi-truong-Demo-cong-cu.md) · [Hiện trạng SQLWF](SQLWF-Hien-trang-Data-Management-va-Nghien-cuu-thi-truong.md) |
+| **Tài liệu liên quan** | ⭐ [**Review đối chiếu yêu cầu BDA**](DMP-Review-Doi-chieu-Yeu-cau-BDA.md) · [Nghiên cứu thị trường](SQLWF-Nghien-cuu-thi-truong-Demo-cong-cu.md) · [Hiện trạng SQLWF](SQLWF-Hien-trang-Data-Management-va-Nghien-cuu-thi-truong.md) |
+| **Demo chạy được** | Repo `dmp` — React + Vite, `npm run dev`, **96 màn hình** bấm được |
 
 > 📌 Tài liệu này **không nhắc lại phần nghiên cứu thị trường** — đã có ở tài liệu riêng. Ở đây đi thẳng vào **tool sẽ có những gì**.
+
+> ⚠️ **BẢN 3.0 CÓ THAY ĐỔI KIẾN TRÚC.** Sau khi đối chiếu với 6 tài liệu yêu cầu của đội BDA
+> *(Phương án tổng thể + GĐ1 → GĐ5)*, thiết kế 21 menu ban đầu phủ được **khoảng 62%** yêu cầu.
+> Kiến trúc đã được sửa thành **8 module · 34 menu** để phủ **~95%**.
+> Toàn bộ căn cứ, mức phủ từng nhóm chức năng và danh sách 12 việc phải làm nằm ở
+> [**tài liệu review**](DMP-Review-Doi-chieu-Yeu-cau-BDA.md). Phần tóm tắt thay đổi xem **mục 4B** ngay dưới bảng 21 menu.
 
 ---
 
@@ -17,7 +24,7 @@
 
 | Phần | Nội dung | Trạng thái |
 |---|---|:---:|
-| **Phần 1** | Vấn đề · Nguyên tắc · Mô hình tổng quan · **Bảng phân rã 21 menu** · Thứ tự khai báo · Ánh xạ từ SQLWF | ✅ **Đã cập nhật theo kiểm kê** |
+| **Phần 1** | Vấn đề · Nguyên tắc · Mô hình tổng quan · **Bảng phân rã 21 menu** · **⭐ Mục 4B — 13 menu bổ sung sau review** · Thứ tự khai báo · Ánh xạ từ SQLWF | ✅ **Cập nhật 09/08 theo review yêu cầu BDA** |
 | **Phần 2** | Module ① Data Catalog — **4 menu · 15 màn hình** | ✅ **Xong** |
 | **Phần 3** | Module ② Governance — **2 menu · 5 màn hình** | ✅ **Xong** |
 | **Phần 4** | Module ③ Data Quality — **5 menu · 10 màn hình** | ✅ **Xong** |
@@ -241,6 +248,95 @@ Metadata mức cột đã đầy đủ. Cái thiếu là **thực thi**:
 > **Câu để báo cáo lãnh đạo:** trong 21 menu thì **14 menu (67%) là kế thừa hoặc nâng cấp cái đã có**. Bảy menu xây mới thì **năm trong số đó nằm trong module Chất lượng** — vốn là phần đã hỏng và cần làm lại.
 >
 > **Đây không phải làm lại từ đầu. Đây là gom lại, nối lại, và hồi sinh phần đã chết.**
+
+</details>
+
+---
+
+## 4B. ⭐ CẬP NHẬT SAU REVIEW — 13 menu bổ sung, tổng thành 8 module · 34 menu
+
+<details open>
+<summary><b>Vì sao phải sửa kiến trúc</b></summary>
+
+Bảng 21 menu ở mục 4 được thiết kế **trước khi có đủ 6 tài liệu yêu cầu của đội BDA**.
+Sau khi đối chiếu, phát hiện ba nhóm thiếu hụt ở cấp kiến trúc — không phải cấp chi tiết:
+
+| Nhóm thiếu | Yêu cầu BDA tương ứng | Mức phủ của bản 2.1 |
+|---|---|:---:|
+| **Ba loại đối tượng dữ liệu bắt buộc** — Hệ thống & nguồn · Kênh trao đổi · **Báo cáo & Chỉ tiêu** | GĐ2 mục 3 *(7 nhóm đối tượng)* · GĐ2 mục 5.1/5.4/5.5 | 🔴 **0%** |
+| **Chính sách & Tuân thủ dữ liệu** — chính sách · vòng đời lưu trữ/xóa · chia sẻ bên thứ ba · checklist tuân thủ · kế hoạch khắc phục | Phương án §5.6 · GĐ4 FR-05, FR-06 | 🔴 **15%** *(chỉ có nhật ký)* |
+| **Quản lý dữ liệu chủ (MDM)** — mô hình chuẩn · phát hiện trùng · Golden Record · phân phối | Phương án §5.4 · toàn bộ GĐ5 | 🔴 **0%** |
+
+Ngoài ra có 4 điểm ở cấp thiết kế cần sửa: **tách 2 trục phân loại**, **hàng đợi phê duyệt dùng chung**,
+**màn tìm kiếm toàn hệ thống**, và **lineage phải cho khai báo thủ công**.
+
+</details>
+
+<details open>
+<summary><b>Mười ba menu bổ sung — mỗi menu gắn với một yêu cầu cụ thể</b></summary>
+
+| # | Menu bổ sung | Module | Yêu cầu BDA gốc | Vì sao không thể bỏ |
+|:---:|---|---|---|---|
+| 1 | **Tìm kiếm toàn hệ thống** | ① | GĐ2 · FR-04 | 21 menu cũ không có màn tìm kiếm nào — người dùng phải biết trước dữ liệu nằm ở menu nào |
+| 2 | **Hệ thống & Nguồn dữ liệu** | ① | GĐ2 §3 nhóm 1 · §5.1 | Menu *Cấu hình* chỉ có tham số kỹ thuật, thiếu mục đích · đơn vị quản lý · môi trường · trạng thái |
+| 3 | **Kênh trao đổi dữ liệu** | ① | GĐ2 §3 nhóm 4 · §5.4 | *Cửa nạp* chỉ quản lý chiều **vào**; kênh **gửi đi** ra bên ngoài không ai quản — đây là điểm rủi ro lộ dữ liệu |
+| 4 | **Báo cáo & Chỉ tiêu** ⭐ | ① | GĐ2 §3 nhóm 5 · §5.5 *(8 nhóm trường)* | **Gap nghiêm trọng nhất.** Không có thực thể này thì lineage dừng ở bảng, phân tích ảnh hưởng thành phỏng đoán, và không tính được chỉ số nghiệm thu *"tỷ lệ báo cáo truy vết được đến nguồn"* |
+| 5 | **Truy vết luồng dữ liệu** | ② | GĐ2 · FR-06 · §5.7 | Bản 2.1 khẳng định *"lineage không có gì để khai"* — trái với yêu cầu **cho phép khai báo thủ công**. Thiếu cả mức **hệ thống** và mức **nghiệp vụ** |
+| 6 | **Phê duyệt & Phiên bản** | ② | GĐ2 · FR-05 · §8 | Quy trình **5 trạng thái** phải áp cho **mọi** metadata, không chỉ thuật ngữ và danh mục. Cần hàng đợi *"chờ tôi duyệt"* dùng chung |
+| 7 | **Chính sách dữ liệu** | ⑥ | Phương án §5.6 · GĐ4 FR-05 | Nhật ký trả lời *"ai đã làm gì"*, không trả lời *"việc đó có đúng quy định không"* |
+| 8 | **Vòng đời & Lưu trữ** | ⑥ | GĐ4 · FR-05 | Thời gian lưu trữ · lưu kho · điều kiện xóa · chia sẻ bên thứ ba — hoàn toàn chưa có |
+| 9 | **Đánh giá tuân thủ** | ⑥ | GĐ4 · FR-06 | Checklist · phát hiện không phù hợp · **kế hoạch khắc phục có hạn** — cơ sở trả lời kiểm toán |
+| 10 | **Mô hình dữ liệu chủ** | ⑦ | GĐ5 · FR-01 | |
+| 11 | **Bản ghi nguồn** | ⑦ | GĐ5 · FR-02 | Toàn bộ **Giai đoạn 5** không có menu nào trong bản 2.1. |
+| 12 | **Nghi ngờ trùng & Hợp nhất** | ⑦ | GĐ5 · FR-03 | Lãnh đạo đọc tài liệu sẽ kết luận tool không làm được GĐ5 |
+| 13 | **Bản ghi chuẩn & Phân phối** | ⑦ | GĐ5 · FR-04, FR-05 | và xin ngân sách cho tool thứ hai. |
+
+</details>
+
+<details open>
+<summary><b>Bốn điểm sửa trong các menu đã có</b></summary>
+
+| Mã | Menu | Sửa gì | Căn cứ |
+|:---:|---|---|---|
+| **D1** | 2.2 Phân loại & Nhãn | ⭐ **Tách 2 trục độc lập**: ① *mức phân loại* 4 cấp (Công khai · Nội bộ · Mật · Hạn chế truy cập) gán cho bảng/cột/báo cáo; ② *nhãn dữ liệu nhạy cảm* (số ĐT, CCCD, số tài khoản…) gán cho cột. Chính sách **che dữ liệu** viết theo trục ②, chính sách **hạn chế tải xuống** viết theo trục ① | GĐ4 §3 |
+| **D4** | 1.2 Bảng dữ liệu | Thêm trường **Người sở hữu dữ liệu** tách khỏi BDA — đây là vai trò **phê duyệt** trong mô hình 5 vai trò của BDA, bản 2.1 thiếu hẳn | GĐ1 §2.3 |
+| **D5** | 3.4 Sự cố chất lượng | Thêm trạng thái **Chờ kiểm tra lại** — máy chạy lại luật để xác nhận trước khi đóng. Khác với *Chờ duyệt đóng* (4 mắt của người) | GĐ3 · FR-04 · §6 |
+| **D6** | 3.2 Luật & Kết quả | Thêm chế độ kích hoạt **theo sự kiện** *(chạy ngay khi job ghi xong bảng đích)*, bên cạnh theo lịch và thủ công | GĐ3 · FR-02 |
+| **D8** | 5.5 Báo cáo quyền | Thêm tab **Giám sát truy cập bất thường** + chính sách **hạn chế tải xuống** trong 5.2 | GĐ4 · FR-04 |
+| **D10** | Toàn bộ module ① | Nút **Nạp từ file** ở mọi màn danh sách, có bước đối chiếu trước khi nạp | GĐ2 §7 |
+
+> ⚠️ **D1 phải quyết trước khi khai nhãn.** Chính sách bảo mật viết sai trục thì không sửa lại được
+> khi đã áp lên 412 cột và đồng bộ sang OPA.
+
+</details>
+
+<details open>
+<summary><b>Kiến trúc sau khi sửa — 8 module · 34 menu</b></summary>
+
+| Module | Số menu | Menu | Giai đoạn BDA |
+|---|:---:|---|:---:|
+| **① DATA CATALOG** | 8 | 🆕 Tìm kiếm toàn hệ thống · Bảng dữ liệu · 🆕 Hệ thống & Nguồn dữ liệu · 🆕 Kênh trao đổi dữ liệu · 🆕 Báo cáo & Chỉ tiêu · Nhóm bảng · Miền dữ liệu · Danh mục tham chiếu | GĐ2 |
+| **② GOVERNANCE** | 4 | Từ điển nghiệp vụ · Phân loại & Nhãn · 🆕 Truy vết luồng dữ liệu · 🆕 Phê duyệt & Phiên bản | GĐ2 · GĐ4 |
+| **③ DATA QUALITY** | 5 | Thư viện luật · Luật & Kết quả · Phân tích dữ liệu · Sự cố chất lượng · Cảnh báo | GĐ3 |
+| **④ NẠP & ĐIỀU PHỐI** | 3 | Luồng xử lý (Job) · Cửa nạp dữ liệu · Theo dõi & Pipeline | GĐ2 · GĐ3 |
+| **⑤ DATA SECURITY** | 5 | Người dùng & Nhóm · Chính sách truy cập · Yêu cầu cấp quyền · Nhật ký kiểm toán · Báo cáo quyền & Giám sát | GĐ4 |
+| **⑥ CHÍNH SÁCH & TUÂN THỦ** 🆕 | 3 | 🆕 Chính sách dữ liệu · 🆕 Vòng đời & Lưu trữ · 🆕 Đánh giá tuân thủ | GĐ4 |
+| **⑦ DỮ LIỆU CHỦ (MDM)** 🆕 | 4 | 🆕 Mô hình dữ liệu chủ · 🆕 Bản ghi nguồn · 🆕 Nghi ngờ trùng & Hợp nhất · 🆕 Bản ghi chuẩn & Phân phối | GĐ5 |
+| **⑧ OPERATIONS** | 2 | Sức khoẻ dữ liệu · Cấu hình hệ thống | Xuyên suốt |
+| | **34** | *(21 menu gốc + 13 menu bổ sung)* | |
+
+**Ánh xạ module ↔ giai đoạn — dùng để báo cáo tiến độ**
+
+| Giai đoạn BDA | Module phụ trách | Đợt triển khai |
+|---|---|:---:|
+| **GĐ1** Khảo sát & nền tảng *(không phải phần mềm)* | kết quả nạp vào 1.3 · 1.7 · 2.2 · 8.2 | Đợt 0 |
+| **GĐ2** Danh mục · Metadata · Lineage | ① + ② | **Đợt 1–2** |
+| **GĐ3** Chất lượng dữ liệu | ③ *(+ ④ hỗ trợ)* | **Đợt 2–3** |
+| **GĐ4** Phân loại · Bảo mật · Tuân thủ | ⑤ + ⑥ | **Đợt 3–4** |
+| **GĐ5** Dữ liệu chủ & mở rộng | ⑦ | **Đợt 5** |
+
+> 💡 Module ⑦ chỉ **dựng khung** ở đợt đầu, khối lượng thực hiện dồn về Đợt 5 —
+> nhưng phải **có mặt trên thanh điều hướng ngay** để lãnh đạo thấy tool có đường đi tới cuối lộ trình.
 
 </details>
 

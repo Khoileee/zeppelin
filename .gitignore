@@ -2,3 +2,8 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Tai lieu yeu cau goc cua doi BDA (.docx noi bo).
+# CO Y KHONG day len vi repo nay dang o che do PUBLIC.
+# Neu muon dong bo sang may khac: chuyen repo sang private roi xoa dong duoi.
+Yêu cầu từ BDA/

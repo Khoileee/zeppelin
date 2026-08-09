@@ -10,12 +10,27 @@ Bộ tài liệu đề xuất xây dựng công cụ **Quản lý dữ liệu t�
 
 | # | Tài liệu | Nội dung | Độ dài |
 |:---:|---|---|---|
-| **1** | [**Đề xuất tool Data Management**](docs/DMP-De-xuat-tool-Data-Management.md) | ⭐ **Tài liệu chính.** 8 phần + phụ lục · 6 module · 21 menu · **55 màn hình** có ảnh · lộ trình 4 đợt · 8 rủi ro · ma trận thao tác theo vai trò | ~3.300 dòng |
-| **2** | [**Plan dựng demo front-end**](docs/DMP-Plan-Dung-Demo-FE.md) | ⭐ Hướng dẫn dựng demo React chạy được — hệ thống thiết kế, 18 component, bảng 55 route, đặc tả từng màn, chia 5 đợt | ~1.090 dòng |
-| 3 | [Kiểm kê màn hình SQLWF](docs/DMP-Kiem-ke-man-hinh-SQLWF.md) | Kết quả **đọc mã nguồn** SQLWF — cơ sở cho cột *"SQLWF hiện có"* trong tài liệu ① | ~430 dòng |
-| 4 | [Nghiên cứu thị trường](docs/SQLWF-Nghien-cuu-thi-truong-Demo-cong-cu.md) | Demo 5 công cụ thị trường *(OpenMetadata · DataHub · Soda · Apache Ranger …)*, 22 ảnh, có bảng xác thực nguồn | ~1.310 dòng |
+| **0** | [**Hướng dẫn sử dụng — Walkthrough**](docs/DMP-Huong-dan-su-dung-Walkthrough.md) | ⭐ **Đọc nếu chưa từng dùng DMP.** Đi từ *"hệ thống này là gì"* tới *"vào đâu khai gì, khai xong nó chạy đi đâu"* — thứ tự khai báo 4 đợt, walkthrough 12 bước theo một bảng thật, bảng **máy tự làm vs người làm tay**, tra nhanh 35 menu, **8 phép thử tự rà soát logic** | ~700 dòng |
+| **1** | [**Review đối chiếu yêu cầu BDA**](docs/DMP-Review-Doi-chieu-Yeu-cau-BDA.md) | ⭐ **Đọc trước tiên.** Rà soát 6 tài liệu yêu cầu BDA *(Phương án + GĐ1→GĐ5)* với thiết kế DMP — mức phủ từng nhóm chức năng, 3 gap cấp kiến trúc, 10 gap chi tiết, kiến trúc đề xuất **8 module · 34 menu**, 12 việc phải làm | ~450 dòng |
+| **2** | [**Đề xuất tool Data Management**](docs/DMP-De-xuat-tool-Data-Management.md) | ⭐ **Tài liệu chính** *(bản 3.0)*. 8 phần + phụ lục · **8 module · 34 menu** · **55 màn hình** có ảnh · **mục 4B** giải thích 13 menu bổ sung · lộ trình · rủi ro · ma trận thao tác theo vai trò | ~3.400 dòng |
+| **3** | [**Plan dựng demo front-end**](docs/DMP-Plan-Dung-Demo-FE.md) | Hướng dẫn dựng demo React — hệ thống thiết kế, 18 component, bảng route, đặc tả từng màn | ~1.090 dòng |
+| 4 | [Kiểm kê màn hình SQLWF](docs/DMP-Kiem-ke-man-hinh-SQLWF.md) | Kết quả **đọc mã nguồn** SQLWF — cơ sở cho cột *"SQLWF hiện có"* trong tài liệu ② | ~430 dòng |
+| 5 | [Nghiên cứu thị trường](docs/SQLWF-Nghien-cuu-thi-truong-Demo-cong-cu.md) | Demo 5 công cụ thị trường *(OpenMetadata · DataHub · Soda · Apache Ranger …)*, 22 ảnh, có bảng xác thực nguồn | ~1.310 dòng |
 
-**Thứ tự đọc gợi ý:** ① → ③ *(hiểu vì sao thiết kế như vậy)* → ② *(nếu dựng demo)*
+**Thứ tự đọc gợi ý:** ⓪ *(hiểu cách dùng)* → ① *(biết thiếu gì)* → ② *(tool sẽ có gì)* → ④ *(vì sao thiết kế như vậy)* → ③ *(nếu dựng demo)*
+
+---
+
+## Demo chạy được
+
+Kiến trúc sau review đã được dựng thành **demo front-end chạy được**: React + Vite + TypeScript,
+**8 module · 34 menu · 96 màn hình**, bấm được, mở popup được, có wizard nhiều bước và các ràng buộc nghiệp vụ thật.
+
+```bash
+npm install && npm run dev      # trong repo dmp
+```
+
+Kịch bản trình bày 12 phút và bảng số liệu chủ chốt nằm trong `README.md` của repo demo.
 
 ---
 
