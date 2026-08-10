@@ -2,6 +2,12 @@
 
 ### Tài liệu hướng dẫn cho phiên làm việc mới (máy khác)
 
+
+> 🔴 **TÀI LIỆU NÀY CHƯA CẬP NHẬT THEO KIẾN TRÚC CHỐT.**
+> Con số menu và màn hình bên dưới **không còn hiệu lực**. Kiến trúc chốt là **8 module · 27 menu** —
+> xem [**DMP-Kien-truc-CHOT.md**](DMP-Kien-truc-CHOT.md). Phần **nghiệp vụ** trong tài liệu này **vẫn đúng**,
+> chỉ số hiệu menu là sai.
+
 | | |
 |---|---|
 | **Mục đích** | Dựng **demo FE chạy được** của DMP — bấm được, điều hướng được, mở popup, chuyển tab, sát giao diện thật |

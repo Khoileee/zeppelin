@@ -2,6 +2,9 @@
 
 ### Đợt rà soát thứ hai, sau khi dựng xong demo
 
+
+> ✅ **Nội dung tài liệu này vẫn đúng.** Riêng **số hiệu menu** đã đổi theo [**kiến trúc chốt 27 menu**](DMP-Kien-truc-CHOT.md) — tra bảng ánh xạ cũ → mới ở mục 2 tài liệu đó.
+
 | | |
 |---|---|
 | **Mục đích** | Trả lời bốn câu: ① Báo cáo có phải chỉ là bảng output không · ② Mọi trường có truy được nguồn gốc không · ③ Giao diện đã đúng thực tế chưa · ④ Có menu nào trùng chức năng không |

@@ -1,5 +1,11 @@
 # DMP — Hướng dẫn sử dụng từ đầu (Walkthrough cho người dùng mới)
 
+
+> 🔴 **TÀI LIỆU NÀY CHƯA CẬP NHẬT THEO KIẾN TRÚC CHỐT.**
+> Con số menu và màn hình bên dưới **không còn hiệu lực**. Kiến trúc chốt là **8 module · 27 menu** —
+> xem [**DMP-Kien-truc-CHOT.md**](DMP-Kien-truc-CHOT.md). Phần **nghiệp vụ** trong tài liệu này **vẫn đúng**,
+> chỉ số hiệu menu là sai.
+
 > **Đọc tài liệu này nếu bạn chưa từng dùng DMP.** Tài liệu đi từ "hệ thống này để làm gì"
 > tới "tôi phải vào đâu, gõ cái gì, và sau khi gõ xong thì nó chạy đi đâu".
 > Mọi ví dụ trong đây là dữ liệu thật đang có trong bản demo — mở song song

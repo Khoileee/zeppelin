@@ -1,6 +1,12 @@
 # Đề xuất tool Data Management
 ### DMP — Nền tảng Quản trị Dữ liệu tập trung
 
+
+> 🔴 **TÀI LIỆU NÀY CHƯA CẬP NHẬT THEO KIẾN TRÚC CHỐT.**
+> Con số menu và màn hình bên dưới **không còn hiệu lực**. Kiến trúc chốt là **8 module · 27 menu** —
+> xem [**DMP-Kien-truc-CHOT.md**](DMP-Kien-truc-CHOT.md). Phần **nghiệp vụ** trong tài liệu này **vẫn đúng**,
+> chỉ số hiệu menu là sai.
+
 | | |
 |---|---|
 | **Người thực hiện** | BA — Đội Tool, Phòng Phân tích Dữ liệu |
@@ -24,7 +30,7 @@
 
 | Phần | Nội dung | Trạng thái |
 |---|---|:---:|
-| **Phần 1** | Vấn đề · Nguyên tắc · Mô hình tổng quan · **Bảng phân rã 21 menu** · **⭐ Mục 4B — 13 menu bổ sung sau review** · Thứ tự khai báo · Ánh xạ từ SQLWF | ✅ **Cập nhật 09/08 theo review yêu cầu BDA** |
+| **Phần 1** | Vấn đề · Nguyên tắc · Mô hình tổng quan · **Bảng phân rã 21 menu** · **⭐ Mục 4B — 13 menu bổ sung sau review** · **⭐ Mục 4C — giải thích chi tiết module ⑥ Chính sách & Tuân thủ và ⑦ Dữ liệu chủ** · Thứ tự khai báo · Ánh xạ từ SQLWF | ✅ **Cập nhật 10/08 — bổ sung mục 4C** |
 | **Phần 2** | Module ① Data Catalog — **4 menu · 15 màn hình** | ✅ **Xong** |
 | **Phần 3** | Module ② Governance — **2 menu · 5 màn hình** | ✅ **Xong** |
 | **Phần 4** | Module ③ Data Quality — **5 menu · 10 màn hình** | ✅ **Xong** |
@@ -337,6 +343,521 @@ Ngoài ra có 4 điểm ở cấp thiết kế cần sửa: **tách 2 trục ph�
 
 > 💡 Module ⑦ chỉ **dựng khung** ở đợt đầu, khối lượng thực hiện dồn về Đợt 5 —
 > nhưng phải **có mặt trên thanh điều hướng ngay** để lãnh đạo thấy tool có đường đi tới cuối lộ trình.
+
+
+
+> ⭐ **Bảy menu của module ⑥ và ⑦ được giải thích chi tiết ở [mục 4C ngay dưới](#4c--giải-thích-chi-tiết-module--và--hai-module-mới-hoàn-toàn)** — mỗi menu: bài toán giải quyết · khai báo gì · dùng thế nào · nối với menu nào.
+
+</details>
+
+---
+
+## 4C. ⭐ GIẢI THÍCH CHI TIẾT MODULE ⑥ VÀ ⑦ — hai module mới hoàn toàn
+
+> Bảng ở mục 4B chỉ ghi **một dòng lý do** cho mỗi menu. Mục này giải thích rõ: **mỗi menu giải quyết bài toán gì · khai báo cái gì · dùng như thế nào · nối với menu nào**.
+>
+> Đây là hai module **chưa có một dòng mã nào trong SQLWF**, nên cần mô tả kỹ hơn các module kế thừa.
+
+---
+
+### ⑥ CHÍNH SÁCH & TUÂN THỦ
+
+<details open>
+<summary><b>Bài toán gốc — vì sao nhật ký không đủ</b></summary>
+
+Module ⑤ đã có **nhật ký kiểm toán** (5.4) ghi lại ai truy cập gì, lúc nào, từ đâu.
+
+Nhưng khi đoàn kiểm tra hỏi, họ **không hỏi nhật ký**. Họ hỏi ba câu khác:
+
+| Câu hỏi của kiểm toán | Nhật ký 5.4 trả lời được? |
+|---|:---:|
+| *"Đơn vị có quy định gì về xử lý dữ liệu cá nhân?"* | ❌ Quy định nằm trong file Word trên máy ai đó |
+| *"Dữ liệu này được phép giữ bao lâu? Đã quá hạn chưa?"* | ❌ Không ai khai thời hạn bao giờ |
+| *"Có bằng chứng chứng minh đã làm đúng quy định không?"* | ⚠️ Có mảnh vụn ở 5 chỗ, phải gom tay mất 2 tuần |
+
+**Nút thắt:** nhật ký trả lời ***"ai đã làm gì"***. Kiểm toán hỏi ***"việc đó có đúng quy định không"***.
+Muốn trả lời vế sau thì **quy định phải được số hoá và gắn vào dữ liệu** — hiện quy định và dữ liệu là hai thế giới tách rời.
+
+**Ba menu = ba câu hỏi**
+
+| Menu | Trả lời câu hỏi |
+|---|---|
+| **6.1 Chính sách dữ liệu** | *Quy định là gì, áp cho dữ liệu nào?* |
+| **6.2 Vòng đời & Lưu trữ** | *Dữ liệu này giữ bao lâu, khi nào xoá, ai được mang ra ngoài?* |
+| **6.3 Đánh giá tuân thủ** | *Thực tế có làm đúng không, chỗ nào sai, ai sửa, hạn bao giờ?* |
+
+</details>
+
+<details open>
+<summary><b>6.1 Chính sách dữ liệu — biến quy định giấy thành thứ hệ thống hiểu được</b></summary>
+
+**Một câu để nhớ:** *nơi khai **quy định phải làm gì**, và gắn quy định đó vào đúng nhóm dữ liệu chịu ảnh hưởng.*
+
+**Bài toán**
+
+Đơn vị đã có Nghị định 13, có quy chế nội bộ về dữ liệu, có quyết định phân cấp truy cập. Nhưng:
+
+- Quy định nằm trong **file PDF**, hệ thống không biết đến sự tồn tại của nó
+- Không ai trả lời được *"bảng `crm.khach_hang` đang chịu những quy định nào"*
+- Quy định sửa đổi thì **không ai biết chỗ nào trong hệ thống phải sửa theo**
+
+**Khai báo gì**
+
+| Trường | Ghi chú |
+|---|---|
+| Mã · Tên chính sách | Ví dụ *"Bảo vệ dữ liệu cá nhân"* |
+| **Trích yếu nội dung** | Vài dòng người đọc hiểu được — không chép cả văn bản |
+| Đơn vị ban hành · Số hiệu văn bản | *Chính phủ · NĐ 13/2023/NĐ-CP* |
+| Ngày hiệu lực · Ngày hết hiệu lực | Hệ thống cảnh báo trước khi hết hiệu lực |
+| Phiên bản | Sửa quy định thì lên phiên bản, giữ bản cũ |
+| ⭐ **Phạm vi áp dụng** | **Trường quan trọng nhất** — chọn theo *miền dữ liệu* · *nhóm bảng* · *mức phân loại* · *nhãn dữ liệu nhạy cảm* |
+| Tài liệu đính kèm | File gốc để đối chiếu khi cần |
+| Người chịu trách nhiệm | Ai trả lời khi bị hỏi về chính sách này |
+
+**Vì sao trường "Phạm vi áp dụng" là quan trọng nhất**
+
+> Khai phạm vi = *mọi cột mang nhãn `PD_SENSITIVE`* thì hệ thống **tự tính ra 144 cột trên 38 bảng** đang chịu chính sách này.
+>
+> Từ đó ba việc chạy được ngay:
+> ① Mở bảng bất kỳ ở 1.2 → thấy **danh sách chính sách đang áp cho bảng đó**
+> ② Menu 6.3 **tự sinh mục kiểm** cho đúng 144 cột ấy
+> ③ Chính sách sửa đổi → hệ thống chỉ ra **chính xác 144 cột phải rà lại**
+>
+> Không có trường này thì chính sách chỉ là một danh sách văn bản — đúng thứ đang có trong thư mục chia sẻ hiện nay.
+
+**⭐ Phân biệt với 5.2 Chính sách truy cập — chỗ dễ nhầm nhất của cả tài liệu**
+
+| | **6.1 Chính sách dữ liệu** | **5.2 Chính sách truy cập** |
+|---|---|---|
+| Bản chất | **Quy định** — điều phải làm | **Cấu hình kỹ thuật** — điều hệ thống đang làm |
+| Ví dụ | *"Số CCCD chỉ được hiển thị cho bộ phận nghiệp vụ trực tiếp"* | `so_cccd` · nhóm `ban_kinh_doanh` · kiểu che `Trả về NULL` |
+| Ai khai | Bộ phận pháp chế / quản trị dữ liệu | Quản trị hệ thống / BDA phụ trách bảng |
+| Sai thì sao | Không tuân thủ pháp luật | Lộ dữ liệu trên thực tế |
+
+> ⭐ **Hai cái này phải khớp nhau — và menu 6.3 chính là nơi so.**
+> Có quy định mà không có cấu hình → **nói một đằng làm một nẻo**.
+> Có cấu hình mà không có quy định → không giải thích được **căn cứ vào đâu mà siết**.
+
+**Dùng như thế nào — một tình huống thật**
+
+1. Pháp chế ban hành quy chế bảo vệ dữ liệu cá nhân → quản trị dữ liệu khai vào 6.1, phạm vi = nhãn `PD_BASIC` + `PD_SENSITIVE`
+2. Hệ thống tính ra: **412 cột** đang chịu chính sách này
+3. Sang 6.3, mục kiểm *"100% cột nhạy cảm phải có chính sách che"* chấm tự động → kết quả **0/412 đạt**
+4. Mở kế hoạch khắc phục, giao cho quản trị hệ thống, hạn 30 ngày
+5. Quản trị hệ thống vào 5.2 khai chính sách che theo nhãn → 412 cột được che
+6. 6.3 chấm lại → **412/412 đạt**, có mốc thời gian làm bằng chứng
+
+**Nối với menu nào**
+
+| Chiều | Menu | Nội dung |
+|---|---|---|
+| Lấy vào | **2.2** Phân loại & Nhãn | Danh sách nhãn và mức phân loại để chọn phạm vi |
+| Lấy vào | **1.3** Miền · **1.6** Nhóm bảng | Phạm vi theo miền / nhóm |
+| Đẩy ra | **1.2** Bảng dữ liệu | Tab hiển thị *"bảng này đang chịu chính sách nào"* |
+| Đẩy ra | **6.2** Vòng đời | Vòng đời viện dẫn chính sách làm căn cứ |
+| Đẩy ra | **6.3** Đánh giá | Mỗi mục kiểm gắn với một chính sách |
+
+</details>
+
+<details open>
+<summary><b>6.2 Vòng đời & Lưu trữ — dữ liệu chỉ có sinh mà không có tử</b></summary>
+
+**Một câu để nhớ:** *nơi khai **dữ liệu sống bao lâu**, khi nào chuyển kho, khi nào được xoá, và ai được mang ra ngoài.*
+
+**Bài toán**
+
+Trong 11.482 bảng hiện có, **không bảng nào có ngày hết hạn**. Hệ quả kép:
+
+| Mặt | Hậu quả |
+|---|---|
+| **Chi phí** | Dữ liệu 2019 vẫn nằm trên vùng lưu trữ nóng, không ai dám xoá vì *"lỡ có ai cần"* |
+| **Pháp lý** | ⚠️ Giữ dữ liệu cá nhân **quá thời hạn cần thiết** là vi phạm — đây là điều nhiều đơn vị bỏ sót |
+
+Và câu hỏi *"file này đã gửi cho đối tác nào, mục đích gì, đến bao giờ"* hiện **không có chỗ nào trả lời**.
+
+**Khai báo gì — tab Vòng đời**
+
+| Trường | Ghi chú |
+|---|---|
+| Đối tượng áp dụng | Bảng · nhóm bảng · miền · hoặc theo nhãn |
+| **Thời gian sử dụng** | Giai đoạn dữ liệu còn được truy vấn thường xuyên — nằm vùng nóng |
+| **Thời gian lưu trữ** | Sau đó chuyển vùng lạnh, vẫn tra được nhưng chậm |
+| **Điều kiện chuyển lưu kho** | Theo tuổi dữ liệu, hoặc theo mức độ được dùng |
+| **Điều kiện xoá** | Điều kiện, **không phải ngày cố định** — ví dụ *"sau 5 năm kể từ khi hợp đồng kết thúc"* |
+| **Căn cứ** | Trỏ tới chính sách ở **6.1** — không tự nghĩ ra thời hạn |
+| Người phê duyệt xoá | ⭐ Bắt buộc |
+| Hành động khi đến hạn | Cảnh báo · tự chuyển lưu kho · **chờ duyệt xoá** |
+
+> 🔴 **Hệ thống không bao giờ tự xoá dữ liệu.** Đến hạn thì đưa vào hàng chờ và gửi cảnh báo, người có thẩm quyền bấm duyệt mới xoá — và việc xoá ghi vào nhật ký 5.4.
+>
+> Tự xoá là rủi ro không chấp nhận được: một cấu hình sai làm mất dữ liệu không khôi phục được.
+
+**Khai báo gì — tab Chia sẻ bên thứ ba**
+
+Đây thực chất là **danh bạ dữ liệu đi ra khỏi đơn vị**.
+
+| Trường | Ghi chú |
+|---|---|
+| Bên nhận | Đối tác, cơ quan quản lý, đơn vị thuê ngoài |
+| **Mục đích xử lý** | ⭐ Bắt buộc — *"phục vụ đối soát giao dịch quý III"* |
+| Phạm vi dữ liệu | Bảng / cột cụ thể được chia sẻ |
+| **Thời hạn** | Có ngày kết thúc, không vô thời hạn |
+| Căn cứ pháp lý | Hợp đồng · văn bản đồng ý · quy định |
+| Người phê duyệt | |
+| Kênh gửi | Trỏ tới menu **Kênh trao đổi dữ liệu** ở module ① |
+| Trạng thái | Đang hiệu lực · sắp hết hạn · đã kết thúc |
+
+**Màn hình có gì**
+
+- Bảng **"Đến hạn trong 30 ngày tới"** — hàng chờ xử lý, giống hàng chờ sự cố ở 3.4
+- Bảng vòng đời theo từng nhóm dữ liệu
+- Tab chia sẻ bên thứ ba, có bộ lọc *"sắp hết hạn"*
+- Thẻ số liệu: dung lượng đang ở vùng nóng quá hạn · số bản chia sẻ đang hiệu lực
+
+**Dùng như thế nào**
+
+> Đối tác A xin dữ liệu đối soát 3 tháng. Thay vì gửi file rồi quên, khai một bản chia sẻ ở 6.2: mục đích, phạm vi, hạn 30/11.
+>
+> Ngày 23/11 hệ thống nhắc *"còn 7 ngày"*. Hết hạn → trạng thái chuyển **Đã kết thúc**, và kênh gửi ở module ① bị **tự động ngắt**.
+>
+> Khi kiểm toán hỏi *"đã từng gửi dữ liệu khách hàng ra ngoài chưa"* → mở đúng một màn, có đủ mục đích, căn cứ, người duyệt, thời hạn.
+
+**Nối với menu nào**
+
+| Chiều | Menu | Nội dung |
+|---|---|---|
+| Lấy vào | **6.1** | Căn cứ để đặt thời hạn |
+| Lấy vào | **1.2** · **1.3** | Đối tượng áp dụng |
+| Đẩy ra | **Kênh trao đổi dữ liệu** *(①)* | Hết hạn chia sẻ → ngắt kênh |
+| Đẩy ra | **5.4** Nhật ký | Mọi lần xoá / lưu kho đều ghi lại |
+| Đẩy ra | **8.1** Sức khoẻ dữ liệu | Chỉ số *dung lượng quá hạn chưa xử lý* |
+
+</details>
+
+<details open>
+<summary><b>6.3 Đánh giá tuân thủ — trả lời được câu "chứng minh đi" trong một buổi</b></summary>
+
+**Một câu để nhớ:** *nơi chạy **kỳ đánh giá** theo danh mục kiểm, ghi chỗ chưa đạt, giao người sửa có hạn, và xuất **hồ sơ bằng chứng**.*
+
+**Bài toán**
+
+Câu hỏi nghiệm thu của GĐ4 ghi rõ: *"Có đủ bằng chứng để chứng minh việc tuân thủ khi được kiểm tra không?"*
+
+Hiện bằng chứng nằm rải ở **5 nơi** — chính sách *(chưa số hoá)*, nhật ký quyền, nhật ký truy cập, lịch sử metadata, kết quả kiểm tra chất lượng. Mỗi lần bị hỏi là **một đợt gom tay hai tuần**, và kết quả phụ thuộc người gom nhớ được bao nhiêu.
+
+**Khai báo gì**
+
+| Trường | Ghi chú |
+|---|---|
+| Kỳ đánh giá | *Quý III/2026* — theo quý hoặc theo đợt kiểm tra đột xuất |
+| Phạm vi | Toàn hệ thống · một miền · một nhóm bảng |
+| Người thực hiện · Người duyệt kết quả | |
+| **Danh mục kiểm** | Từng mục: nội dung kiểm · **căn cứ chính sách** *(trỏ 6.1)* · cách kiểm · kết quả · ghi chú |
+
+**⭐ Tính năng quan trọng nhất: mục kiểm chấm tự động**
+
+Mỗi mục kiểm khai **cách kiểm** là *tự động* hay *thủ công*. Mục tự động thì hệ thống **tự đọc dữ liệu sẵn có và chấm ngay** — không phải đi hỏi ai.
+
+| Mục kiểm | Cách kiểm | Hệ thống lấy số ở đâu | Kết quả hiện tại |
+|---|:---:|---|:---:|
+| 100% cột nhạy cảm có chính sách che | 🤖 Tự động | Đối chiếu **2.2** với **5.2** | **0 / 412** ❌ |
+| 100% quyền cấp mới có thời hạn | 🤖 Tự động | **5.2** cột *Thời hạn* | 13% ❌ |
+| Không còn tài khoản đã nghỉ việc giữ quyền | 🤖 Tự động | **5.1** đối chiếu **5.2** | 9 tài khoản ❌ |
+| Bảng Tier 1 đều có người phụ trách | 🤖 Tự động | **1.2** | 34% ❌ |
+| Dữ liệu cá nhân không giữ quá hạn | 🤖 Tự động | **6.2** | chưa khai vòng đời |
+| Có văn bản đồng ý cho mọi bản chia sẻ | ✍️ Thủ công | Người đánh giá đính kèm | |
+| Nhân sự mới được đào tạo về quy chế dữ liệu | ✍️ Thủ công | Người đánh giá xác nhận | |
+
+> ⭐ **Đây là điểm biến việc đánh giá tuân thủ từ "một đợt làm việc" thành "một màn hình".**
+> Phần lớn mục kiểm chấm được bằng dữ liệu tool đã có sẵn — vì các module ① → ⑤ đã ghi lại đủ.
+> Người đánh giá chỉ còn phải làm tay vài mục liên quan tới giấy tờ và con người.
+
+**Phát hiện không phù hợp → kế hoạch khắc phục**
+
+Mục kiểm nào **không đạt** thì mở một dòng khắc phục:
+
+| Trường | Ghi chú |
+|---|---|
+| Nội dung phát hiện | *"412 cột nhạy cảm chưa có chính sách che"* |
+| Mức độ | Nghiêm trọng · Trung bình · Nhẹ |
+| **Người phụ trách** | ⭐ Một người cụ thể, không phải một bộ phận |
+| **Hạn khắc phục** | ⭐ Có ngày |
+| Trạng thái | Mới · Đang làm · Chờ xác nhận · Đã đóng · **Quá hạn** |
+| Bằng chứng khắc phục | Ảnh chụp / liên kết tới cấu hình đã sửa |
+
+> Cấu trúc này **giống hệt sự cố chất lượng ở 3.4** — có người, có hạn, có trạng thái, có bằng chứng. Dùng lại đúng khung đó, chỉ đổi đối tượng.
+
+**Xuất hồ sơ bằng chứng**
+
+Một nút, gom theo kỳ đánh giá:
+
+```
+Hồ sơ tuân thủ — Quý III/2026
+├── 01_Danh muc chinh sach.pdf        ← 6.1
+├── 02_Ket qua danh gia.pdf           ← 6.3, có điểm từng mục
+├── 03_Ke hoach khac phuc.pdf         ← 6.3
+├── 04_Nhat ky phan quyen.csv         ← 5.2 + 5.3
+├── 05_Nhat ky truy cap.csv           ← 5.4, lọc theo kỳ
+├── 06_Lich su thay doi metadata.csv  ← 2.4
+└── 07_Ket qua kiem tra chat luong.csv ← 3.2
+```
+
+> ⭐ **Đây là thứ trả lời được câu hỏi nghiệm thu của GĐ4.** Từ hai tuần gom tay xuống một lần bấm.
+
+**Nối với menu nào**
+
+| Chiều | Menu | Nội dung |
+|---|---|---|
+| Lấy vào | **6.1** | Căn cứ của từng mục kiểm |
+| Lấy vào | **5.1 · 5.2 · 5.4** | Số liệu chấm tự động phần bảo mật |
+| Lấy vào | **1.2 · 2.2 · 3.2 · 6.2** | Số liệu chấm tự động phần metadata, chất lượng, vòng đời |
+| Đẩy ra | **8.1** Sức khoẻ dữ liệu | Thẻ *điểm tuân thủ kỳ gần nhất* và *số phát hiện quá hạn* |
+
+</details>
+
+---
+
+### ⑦ DỮ LIỆU CHỦ (MDM)
+
+<details open>
+<summary><b>Bài toán gốc — một khách hàng, năm bản ghi, không ai biết bản nào đúng</b></summary>
+
+Cùng một khách hàng đang tồn tại ở nhiều hệ thống:
+
+| Hệ thống | Mã | Tên | Số điện thoại | Địa chỉ |
+|---|---|---|---|---|
+| CRM | `KH00123` | Nguyễn Văn A | 0987654321 | 12 Trần Duy Hưng, Hà Nội |
+| Tính cước | `TC-88214` | NGUYEN VAN A | 84987654321 | 12 Tran Duy Hung |
+| Chăm sóc KH | `CS_4471` | Nguyễn văn A | 0987.654.321 | *(trống)* |
+
+**Hệ quả đo được**
+
+| Vấn đề | Biểu hiện |
+|---|---|
+| Báo cáo sai | Đếm ra **3 khách hàng** trong khi thực tế là **1** |
+| Không gộp được hồ sơ | Không trả lời được *"khách hàng này dùng tổng cộng mấy dịch vụ"* |
+| Sửa một nơi, sai ba nơi | Khách đổi số điện thoại, chỉ CRM được cập nhật |
+| Không có bản đúng | Hỏi *"địa chỉ nào là đúng"* — không ai dám khẳng định |
+
+**⭐ Phân biệt với 1.7 Danh mục tham chiếu — hai thứ rất hay bị nhầm**
+
+| | **Danh mục tham chiếu** *(1.7)* | **Dữ liệu chủ** *(module ⑦)* |
+|---|---|---|
+| Ví dụ | Tỉnh/thành · Đơn vị tiền tệ · Loại hợp đồng | Khách hàng · Đối tác · Sản phẩm · Nhân viên |
+| Số bản ghi | Ít — vài chục đến vài trăm | Nhiều — hàng triệu |
+| Ai tạo ra | **Một nguồn duy nhất**, thường là quy định nhà nước | ⭐ **Nhiều hệ thống cùng tạo ra** |
+| Thay đổi | Hiếm | Liên tục |
+| Bài toán chính | Thống nhất cách gọi | ⭐ **Hợp nhất bản ghi trùng** |
+| Cách làm | Khai một bảng, mọi nơi tham chiếu | Gom về, so khớp, chọn bản chuẩn |
+
+> Nói gọn: **danh mục tham chiếu chỉ cần khai một lần cho đúng. Dữ liệu chủ phải liên tục đối soát vì nhiều nơi cùng sinh ra nó.**
+
+**Bốn menu = bốn bước của một dây chuyền**
+
+```
+7.1 Mô hình          7.2 Bản ghi nguồn      7.3 Nghi ngờ trùng     7.4 Bản ghi chuẩn
+định nghĩa      →    gom về, chuẩn hoá  →   máy gợi ý,        →    chốt bản đúng
+thế nào là đúng      giữ nguyên bản gốc     người quyết định       và phát cho hệ thống khác
+```
+
+> 💡 **Module này chỉ dựng khung ở đợt đầu, khối lượng thật dồn về Đợt 5.** Nhưng phải có mặt trên thanh điều hướng ngay — để người xem thấy tool có đường đi tới cuối lộ trình, không phải mua thêm công cụ thứ hai.
+
+</details>
+
+<details open>
+<summary><b>7.1 Mô hình dữ liệu chủ — định nghĩa thế nào là một bản ghi đúng</b></summary>
+
+**Một câu để nhớ:** *nơi khai **một "Khách hàng" chuẩn gồm những trường gì**, trường nào dùng để nhận ra trùng, và tin hệ thống nào cho trường nào.*
+
+**Khai báo gì**
+
+| Trường | Ghi chú |
+|---|---|
+| Tên đối tượng chủ | Khách hàng · Đối tác · Sản phẩm · Nhân viên |
+| **Thuộc tính chuẩn** | Danh sách trường: tên · kiểu · bắt buộc · tập giá trị · thuật ngữ *(trỏ 2.1)* |
+| **Khoá định danh** | ⭐ Trường dùng để nhận ra hai bản ghi là một — CCCD · mã số thuế · số điện thoại |
+| Quy tắc sinh mã chuẩn | `KH-` + 8 số, tăng dần |
+| **Quy tắc chuẩn hoá** | Viết hoa tên · bỏ dấu để so khớp · chuẩn số điện thoại về `0…` · bỏ ký tự phân cách |
+| ⭐ **Thứ tự ưu tiên nguồn theo TỪNG thuộc tính** | Xem dưới |
+| Hệ thống nguồn tham gia | Chọn từ menu *Hệ thống & Nguồn dữ liệu* ở module ① |
+
+**⭐ Vì sao ưu tiên nguồn phải khai theo từng thuộc tính, không phải theo cả bản ghi**
+
+| Thuộc tính | Tin hệ thống nào nhất | Vì sao |
+|---|---|---|
+| Họ tên · CCCD | Hệ thống định danh | Nơi đối chiếu giấy tờ gốc |
+| Số điện thoại | Hệ thống tính cước | Nơi số điện thoại là khoá nghiệp vụ, luôn đúng |
+| Địa chỉ liên hệ | CRM | Nơi nhân viên cập nhật khi khách báo đổi |
+| Trạng thái hợp đồng | Hệ thống hợp đồng | Nguồn duy nhất |
+
+> Nếu chỉ khai *"tin CRM nhất"* thì lấy luôn cả số điện thoại cũ của CRM — trong khi hệ thống tính cước có số mới. **Khai theo từng trường mới ra được bản ghi chuẩn thật sự đúng.**
+
+**Nối với menu nào**
+
+| Chiều | Menu | Nội dung |
+|---|---|---|
+| Lấy vào | *Hệ thống & Nguồn dữ liệu* *(①)* | Danh sách hệ thống tham gia |
+| Lấy vào | **2.1** Từ điển nghiệp vụ | Mỗi thuộc tính gắn một thuật ngữ để thống nhất cách hiểu |
+| Đẩy ra | **7.2 · 7.3 · 7.4** | Toàn bộ dây chuyền chạy theo mô hình khai ở đây |
+
+</details>
+
+<details open>
+<summary><b>7.2 Bản ghi nguồn — gom về một chỗ, chuẩn hoá, nhưng giữ nguyên bản gốc</b></summary>
+
+**Một câu để nhớ:** *nơi thấy **cùng một khách hàng đang tồn tại ở những hệ thống nào**, với giá trị gốc ra sao và sau chuẩn hoá thành gì.*
+
+**Màn hình có gì**
+
+| Cột | Ghi chú |
+|---|---|
+| Mã ở hệ thống nguồn | `KH00123` |
+| **Hệ thống nguồn** | CRM · Tính cước · Chăm sóc KH |
+| Giá trị gốc | Giữ **nguyên vẹn**, không sửa |
+| **Giá trị sau chuẩn hoá** | Áp quy tắc khai ở 7.1 |
+| Trạng thái | Chờ so khớp · Đã gộp vào bản chuẩn · Xác định độc lập |
+| Chất lượng bản ghi | Thiếu trường bắt buộc? Sai định dạng? — dùng lại luật ở module ③ |
+| Lần đồng bộ gần nhất | |
+
+> 🔴 **Nguyên tắc bất di bất dịch: DMP chỉ ĐỌC từ hệ thống nguồn, không bao giờ ghi ngược.**
+>
+> Muốn sửa dữ liệu ở CRM thì phải vào CRM mà sửa. Nếu để DMP ghi ngược thì khi có sự cố **không ai truy được ai đã sửa** — và các hệ thống nguồn sẽ mất quyền kiểm soát dữ liệu của chính mình.
+>
+> Trường hợp cần đẩy ngược *(hiếm)* phải đi qua một quy trình riêng có phê duyệt, không phải thao tác thường ngày.
+
+**Dùng như thế nào**
+
+> Tìm theo số CCCD → thấy ngay khách hàng này có **3 bản ghi ở 3 hệ thống**, giá trị nào lệch nhau ở chỗ nào. Đây là màn hay dùng nhất khi xử lý khiếu nại của khách.
+
+**Nối với menu nào**
+
+| Chiều | Menu | Nội dung |
+|---|---|---|
+| Lấy vào | **4.2** Cửa nạp dữ liệu | Đường đưa dữ liệu từ hệ thống nguồn về |
+| Lấy vào | **7.1** | Quy tắc chuẩn hoá |
+| Lấy vào | **3.2** Luật & Kết quả | Chấm chất lượng từng bản ghi |
+| Đẩy ra | **7.3** | Danh sách bản ghi chờ so khớp |
+
+</details>
+
+<details open>
+<summary><b>7.3 Nghi ngờ trùng & Hợp nhất — máy gợi ý, người quyết định</b></summary>
+
+**Một câu để nhớ:** *nơi máy đưa ra **danh sách nghi ngờ trùng kèm điểm giống nhau**, và người xem từng cặp rồi quyết định gộp hay không.*
+
+> 🔴 **Máy KHÔNG tự động hợp nhất.** Đây là yêu cầu ghi rõ trong FR-03 của GĐ5, và là quyết định thiết kế đúng:
+>
+> Gộp nhầm **hai khách hàng thật thành một** là sự cố nghiêm trọng — hồ sơ lẫn lộn, hoá đơn sai người, và **rất khó gỡ ra** vì các hệ thống hạ nguồn đã dùng mã chuẩn mới.
+>
+> Bỏ sót một cặp trùng thì chỉ là chưa hợp nhất, sửa sau vẫn được. **Hai loại sai này không cân bằng nhau**, nên hệ thống nghiêng về phía thận trọng.
+
+**Màn danh sách**
+
+| Cột | Ghi chú |
+|---|---|
+| Nhóm nghi ngờ | 2 hoặc nhiều bản ghi |
+| **Điểm giống nhau** | 0–100%, có màu |
+| **Quy tắc nào khớp** | *Trùng CCCD* · *Trùng số ĐT + tên gần giống* — cho biết vì sao máy nghi |
+| Hệ thống liên quan | |
+| Người xử lý · Trạng thái | Chờ xử lý · Đã gộp · Không phải trùng · Chờ thêm thông tin |
+
+**Màn so sánh — nơi ra quyết định**
+
+Các bản ghi đặt **cạnh nhau theo cột**, trường nào lệch thì **tô nổi**. Người xử lý chọn giá trị nào giữ lại **cho từng trường** — mặc định hệ thống chọn sẵn theo thứ tự ưu tiên nguồn khai ở 7.1, người xử lý chỉ sửa chỗ cần.
+
+**Ba quyết định**
+
+| Quyết định | Hệ thống làm gì |
+|---|---|
+| **Hợp nhất** | Sinh bản ghi chuẩn ở 7.4, liên kết ngược về các bản ghi nguồn |
+| **Không phải trùng** | ⭐ **Ghi nhớ cặp này** — lần sau không hỏi lại nữa |
+| **Chờ thêm thông tin** | Để lại hàng chờ, ghi lý do đang chờ gì |
+
+> ⭐ Lựa chọn *"Không phải trùng"* phải ghi nhớ được, nếu không mỗi lần chạy so khớp lại hiện đúng cặp ấy — người dùng sẽ bỏ mặc cả hàng chờ. Đây là lỗi làm chết nhiều dự án MDM.
+
+**Ngưỡng điều chỉnh được**
+
+| Mức điểm giống | Hệ thống làm gì |
+|---|---|
+| Trên ngưỡng cao *(mặc định 95%)* | Đưa lên đầu hàng chờ, đề xuất gộp |
+| Giữa hai ngưỡng | Vào hàng chờ bình thường |
+| Dưới ngưỡng thấp *(mặc định 60%)* | Bỏ qua, không làm phiền |
+
+> Ngưỡng đặt ở menu **8.2 Cấu hình hệ thống**, chỉnh theo thực tế từng đối tượng chủ — khách hàng cá nhân và doanh nghiệp cần ngưỡng khác nhau.
+
+</details>
+
+<details open>
+<summary><b>7.4 Bản ghi chuẩn & Phân phối — chốt bản đúng và phát cho các hệ thống khác</b></summary>
+
+**Một câu để nhớ:** *nơi giữ **bản ghi đúng duy nhất** của mỗi khách hàng, biết nó được ghép từ đâu, và phát ngược cho các hệ thống dùng.*
+
+**Bản ghi chuẩn có gì**
+
+| Cột | Ghi chú |
+|---|---|
+| Mã chuẩn | `KH-00004471` — sinh theo quy tắc ở 7.1 |
+| Các thuộc tính | Giá trị đã chốt |
+| ⭐ **Nguồn của từng thuộc tính** | *Địa chỉ lấy từ CRM · Số ĐT lấy từ Tính cước* — biết vì sao giá trị này được chọn |
+| **Liên kết ngược** | ⭐ Danh sách mã ở mọi hệ thống nguồn đã gộp |
+| Lịch sử thay đổi | Trường nào đổi, lúc nào, do bản ghi nguồn nào đổi |
+| Số bản ghi nguồn đã gộp | |
+
+**⭐ Vì sao liên kết ngược là trường không thể thiếu**
+
+> Các hệ thống cũ **vẫn tiếp tục dùng mã cũ của chúng** — không thể bắt CRM đổi toàn bộ `KH00123` thành `KH-00004471`.
+>
+> Nên phải tra được **hai chiều**: từ mã cũ ra mã chuẩn, và từ mã chuẩn ra mọi mã cũ. Thiếu cái này thì bản ghi chuẩn thành một hòn đảo, không ai dùng được.
+
+**Tách bản ghi đã gộp nhầm**
+
+> Gộp nhầm thì phải **tách ra được**, trả các bản ghi nguồn về trạng thái *Chờ so khớp*, và ghi vào lịch sử. Không có chức năng tách thì người xử lý sẽ **không dám bấm gộp** — và cả module đứng im.
+
+**Tab Phân phối — ba cách phát dữ liệu chuẩn**
+
+| Cách | Dùng khi | Ghi chú |
+|---|---|---|
+| **API tra cứu** | Hệ thống cần tra tại thời điểm dùng | Trả về bản ghi chuẩn theo mã hoặc theo khoá định danh |
+| **Theo lô** | Hệ thống chỉ cần cập nhật định kỳ | Xuất file hoặc ghi vào bảng, theo lịch |
+| **Theo sự kiện** | Hệ thống cần biết ngay khi có thay đổi | Bắn thông báo khi bản ghi chuẩn đổi |
+
+Mỗi hệ thống nhận đăng ký một bản: nhận đối tượng nào · nhận trường nào · cách nào · lịch · trạng thái. Có **lịch sử phát** để đối chiếu khi hệ thống nhận báo thiếu dữ liệu.
+
+**Nối với menu nào**
+
+| Chiều | Menu | Nội dung |
+|---|---|---|
+| Lấy vào | **7.3** | Kết quả hợp nhất |
+| Đẩy ra | *Kênh trao đổi dữ liệu* *(①)* | Mỗi luồng phân phối là một kênh, chịu quản lý chung |
+| Đẩy ra | **5.4** Nhật ký | Ghi lại mọi lần phát dữ liệu ra ngoài |
+| Đẩy ra | **1.2** Bảng dữ liệu | Bảng chứa dữ liệu chuẩn xuất hiện trong danh mục như mọi bảng khác |
+
+</details>
+
+<details open>
+<summary><b>Tổng kết — bảy menu, bảy bài toán</b></summary>
+
+| Menu | Bài toán giải quyết | Không có thì hậu quả |
+|---|---|---|
+| **6.1** Chính sách dữ liệu | Quy định nằm trong file, hệ thống không biết | Không trả lời được *"bảng này chịu quy định nào"* |
+| **6.2** Vòng đời & Lưu trữ | Dữ liệu chỉ sinh, không tử · chia sẻ ra ngoài không ai quản | Tốn hạ tầng · ⚠️ giữ dữ liệu cá nhân quá hạn là vi phạm |
+| **6.3** Đánh giá tuân thủ | Bằng chứng rải 5 nơi, gom tay 2 tuần | Không trả lời được câu nghiệm thu của GĐ4 |
+| **7.1** Mô hình dữ liệu chủ | Không có định nghĩa *"thế nào là bản ghi đúng"* | Ba menu còn lại không chạy được |
+| **7.2** Bản ghi nguồn | Không biết một khách hàng đang nằm ở đâu | Không có nguyên liệu để so khớp |
+| **7.3** Nghi ngờ trùng | Không biết bản nào là trùng | Báo cáo đếm 3 khách hàng cho 1 người thật |
+| **7.4** Bản ghi chuẩn & Phân phối | Không có bản đúng, không phát được đi | Mỗi hệ thống tiếp tục giữ một phiên bản riêng |
+
+**Thứ tự triển khai bắt buộc**
+
+| Module | Điều kiện chặn |
+|---|---|
+| **⑥** | Cần **2.2** *(phân loại & nhãn)* xong trước — phạm vi chính sách khai theo nhãn. Cần **⑤** chạy ổn định để 6.3 có số liệu chấm tự động |
+| **⑦** | Cần **1.x Hệ thống & Nguồn dữ liệu** · **2.1** *(thuật ngữ)* · **③** *(chất lượng)* · **4.2** *(cửa nạp)*. Đây là lý do MDM nằm ở **Đợt 5** |
+
+> ⭐ **Một câu để báo cáo lãnh đạo về hai module này:**
+>
+> Module ⑥ là thứ **đoàn kiểm tra hỏi đầu tiên** — và hiện chưa có gì trả lời được.
+> Module ⑦ là thứ **quyết định báo cáo có đếm đúng số khách hàng hay không** — và hiện đang đếm sai mà không ai biết sai bao nhiêu.
 
 </details>
 

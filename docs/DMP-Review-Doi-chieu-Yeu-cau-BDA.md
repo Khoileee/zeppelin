@@ -2,6 +2,9 @@
 
 ### Rà soát toàn bộ 6 tài liệu yêu cầu (Phương án + GĐ1 → GĐ5) với thiết kế 21 menu / 55 màn của DMP
 
+
+> ✅ **Nội dung tài liệu này vẫn đúng.** Riêng **số hiệu menu** đã đổi theo [**kiến trúc chốt 27 menu**](DMP-Kien-truc-CHOT.md) — tra bảng ánh xạ cũ → mới ở mục 2 tài liệu đó.
+
 | | |
 |---|---|
 | **Mục đích** | Trả lời một câu hỏi: **thiết kế DMP hiện tại đã phủ hết yêu cầu BDA chưa** — và nếu chưa thì thiếu gì, sửa thế nào |
