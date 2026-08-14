@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMP — Báo cáo đề xuất hệ thống Quản trị dữ liệu</title>
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --paper:#F6F8F8; --panel:#FFFFFF; --panel-2:#EFF4F4;
+  --ink:#1B2A32; --muted:#5C6E77; --line:#DCE5E7; --line-strong:#C3D2D5;
+  --accent:#0E7C86; --accent-ink:#0A5A62; --accent-soft:#E3F1F2;
+  --warn-bg:#FBF3E2; --warn-line:#D9B25C; --warn-ink:#7A5B12;
+  --m1:#0E7C86; --m2:#5665B6; --m3:#B26B22; --m4:#3D8B5F;
+  --m5:#B04A5A; --m6:#7A5CA8; --m7:#2E7EA6; --m8:#5E6B74;
+  --r-nen:#2278B5; --r-tt:#2E8B57; --r-khai:#A87F1B; --r-cho:#7A5CA8; --r-xem:#68767E;
+  --shadow:0 1px 3px rgba(27,42,50,.08), 0 4px 16px rgba(27,42,50,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F171D; --panel:#17222A; --panel-2:#1D2A33;
+    --ink:#E2EBEE; --muted:#94A6AE; --line:#273741; --line-strong:#374B56;
+    --accent:#3FAAB4; --accent-ink:#7FD0D8; --accent-soft:#153238;
+    --warn-bg:#2E2712; --warn-line:#8A6D22; --warn-ink:#E0C067;
+    --m1:#3FAAB4; --m2:#8792D8; --m3:#D0904C; --m4:#63AE85;
+    --m5:#CF7583; --m6:#A288CF; --m7:#5BA5CB; --m8:#8B99A2;
+    --r-nen:#5BA3D6; --r-tt:#57AE7F; --r-khai:#CBA43F; --r-cho:#A288CF; --r-xem:#8B99A2;
+    --shadow:0 1px 3px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F171D; --panel:#17222A; --panel-2:#1D2A33;
+  --ink:#E2EBEE; --muted:#94A6AE; --line:#273741; --line-strong:#374B56;
+  --accent:#3FAAB4; --accent-ink:#7FD0D8; --accent-soft:#153238;
+  --warn-bg:#2E2712; --warn-line:#8A6D22; --warn-ink:#E0C067;
+  --m1:#3FAAB4; --m2:#8792D8; --m3:#D0904C; --m4:#63AE85;
+  --m5:#CF7583; --m6:#A288CF; --m7:#5BA5CB; --m8:#8B99A2;
+  --r-nen:#5BA3D6; --r-tt:#57AE7F; --r-khai:#CBA43F; --r-cho:#A288CF; --r-xem:#8B99A2;
+  --shadow:0 1px 3px rgba(0,0,0,.35);
+}
+/* ============ BASE ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{
+  font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  background:var(--paper); color:var(--ink); line-height:1.55;
+}
+.mono{font-family:"Cascadia Code",Consolas,"Courier New",monospace;font-size:.92em}
+h1,h2,h3,h4{line-height:1.25;text-wrap:balance}
+a{color:var(--accent-ink)}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+@media (max-width:900px){.app{grid-template-columns:1fr}}
+
+/* ============ SIDEBAR ============ */
+.side{
+  border-right:1px solid var(--line); background:var(--panel);
+  padding:26px 0 18px; position:sticky; top:0; height:100vh; overflow-y:auto;
+}
+@media (max-width:900px){.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line);padding:16px 0 6px}}
+.brand{padding:0 22px 20px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.brand .kicker{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);font-weight:600}
+.brand h1{font-size:1.16rem;font-weight:650;margin-top:5px}
+.brand .sub{font-size:.8rem;color:var(--muted);margin-top:5px}
+.nav{display:flex;flex-direction:column;gap:2px;padding:0 12px}
+@media (max-width:900px){.nav{flex-direction:row;flex-wrap:wrap}}
+.nav button{
+  display:flex;gap:10px;align-items:baseline;text-align:left;width:100%;
+  padding:9px 12px;border-radius:7px;font-size:.92rem;color:var(--muted);
+}
+@media (max-width:900px){.nav button{width:auto}}
+.nav button .no{font-size:.72rem;font-weight:700;color:var(--muted);min-width:14px}
+.nav button:hover{background:var(--panel-2);color:var(--ink)}
+.nav button.on{background:var(--accent-soft);color:var(--accent-ink);font-weight:600}
+.nav button.on .no{color:var(--accent-ink)}
+.side .foot{padding:18px 22px 0;font-size:.75rem;color:var(--muted);border-top:1px solid var(--line);margin-top:16px}
+@media (max-width:900px){.side .foot{display:none}}
+
+/* ============ MAIN ============ */
+.main{padding:34px 42px 70px;max-width:1220px}
+@media (max-width:900px){.main{padding:20px 16px 60px}}
+.page{display:none}
+.page.on{display:block}
+.page-head{margin-bottom:26px}
+.page-head .kicker{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);font-weight:600}
+.page-head h2{font-size:1.7rem;font-weight:650;margin-top:6px}
+.page-head .lead{color:var(--muted);margin-top:8px;max-width:72ch}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow)}
+.section-label{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:30px 0 12px}
+p.note{color:var(--muted);font-size:.9rem;max-width:76ch}
+
+/* stat strip */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:20px 0 8px}
+.stat{padding:14px 18px}
+.stat .v{font-size:1.75rem;font-weight:650;font-variant-numeric:tabular-nums;color:var(--accent-ink)}
+.stat .k{font-size:.8rem;color:var(--muted);margin-top:2px}
+
+/* pipeline diagram */
+.pipe-wrap{overflow-x:auto;padding:20px 18px 16px}
+.pipe{display:flex;align-items:stretch;gap:0;min-width:860px}
+.pnode{flex:1;min-width:118px;border:1px solid var(--line-strong);border-radius:8px;padding:10px 10px 9px;background:var(--panel);position:relative}
+.pnode .t{font-size:.84rem;font-weight:600;line-height:1.3}
+.pnode .d{font-size:.72rem;color:var(--muted);margin-top:3px;line-height:1.35}
+.pnode .dmp{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.parrow{align-self:center;padding:0 6px;color:var(--muted);font-size:1.05rem;flex:0 0 auto}
+.pipe-in{display:flex;gap:8px;align-items:center;margin:12px 0 0;min-width:860px}
+.pipe-in .lbl{font-size:.75rem;color:var(--muted);flex:0 0 auto}
+.pipe-legend{padding:0 18px 16px;font-size:.8rem;color:var(--muted)}
+.callout{border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;padding:13px 17px;margin:18px 0;max-width:82ch}
+.callout b{color:var(--accent-ink)}
+.callout.warn{border-left-color:var(--warn-line);background:var(--warn-bg);color:var(--warn-ink)}
+.callout.warn b{color:var(--warn-ink)}
+
+/* generic tables */
+table.tb{width:100%;border-collapse:collapse;font-size:.88rem}
+table.tb th{
+  text-align:left;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;padding:9px 13px;border-bottom:1px solid var(--line-strong);
+}
+table.tb td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+table.tb tr:last-child td{border-bottom:none}
+.tb-wrap{overflow-x:auto}
+
+/* chips */
+.chip{
+  display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:20px;
+  font-size:.76rem;font-weight:600;border:1px solid var(--line-strong);white-space:nowrap;
+}
+.chip .cd{font-variant-numeric:tabular-nums}
+.mchip{cursor:pointer;background:var(--panel)}
+.mchip:hover{border-color:currentColor}
+.rolechip{font-weight:600}
+.phasechip{background:var(--panel-2);color:var(--muted);border-color:var(--line)}
+
+/* ============ REQUIREMENTS PAGE ============ */
+.acc{margin-bottom:12px;overflow:hidden}
+.acc > .acc-head{
+  width:100%;display:flex;align-items:baseline;gap:14px;padding:15px 20px;text-align:left;
+}
+.acc > .acc-head:hover{background:var(--panel-2)}
+.acc .gd{font-size:.78rem;font-weight:700;color:var(--accent-ink);min-width:38px}
+.acc .ttl{font-weight:650;font-size:1rem;flex:1}
+.acc .en{font-size:.78rem;color:var(--muted);font-weight:400}
+.acc .tw{color:var(--muted);font-size:.85rem;transition:transform .15s}
+.acc.open .tw{transform:rotate(90deg)}
+.acc-body{display:none;padding:2px 20px 18px;border-top:1px solid var(--line)}
+.acc.open .acc-body{display:block}
+.fr{display:grid;grid-template-columns:88px 1fr 210px;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:.88rem}
+.fr:last-of-type{border-bottom:none}
+.fr .frid{font-weight:700;color:var(--accent-ink);font-size:.8rem}
+.fr .frmenus{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;align-content:flex-start}
+@media (max-width:760px){.fr{grid-template-columns:70px 1fr}.fr .frmenus{grid-column:1/-1;justify-content:flex-start}}
+.gd-goal{font-size:.88rem;color:var(--muted);margin:12px 0 10px;max-width:80ch}
+
+/* ============ SYSTEM MAP ============ */
+.map{display:grid;grid-template-columns:330px 1fr;gap:18px;align-items:start}
+@media (max-width:980px){.map{grid-template-columns:1fr}}
+.modlist{display:flex;flex-direction:column;gap:8px}
+.mod{overflow:hidden}
+.mod-head{width:100%;display:flex;align-items:center;gap:11px;padding:12px 14px;text-align:left;border-left:3px solid var(--mc)}
+.mod-head:hover{background:var(--panel-2)}
+.mod-head .num{font-size:.95rem;color:var(--mc);font-weight:700}
+.mod-head .nm{flex:1}
+.mod-head .nm .en{font-weight:650;font-size:.93rem;letter-spacing:.02em}
+.mod-head .nm .vn{font-size:.76rem;color:var(--muted)}
+.mod-head .ct{font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.mod-menus{display:none;border-top:1px solid var(--line);padding:6px 8px 8px}
+.mod.open .mod-menus{display:flex;flex-direction:column;gap:2px}
+.mitem{display:flex;gap:9px;align-items:baseline;width:100%;text-align:left;padding:7px 10px;border-radius:6px;font-size:.87rem}
+.mitem:hover{background:var(--panel-2)}
+.mitem.on{background:var(--accent-soft)}
+.mitem .cd{font-weight:700;font-size:.76rem;color:var(--mc);min-width:26px;font-variant-numeric:tabular-nums}
+.mitem .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto;position:relative;top:-1px}
+
+/* detail panel */
+.detail{padding:0;min-height:420px;position:sticky;top:20px}
+@media (max-width:980px){.detail{position:static}}
+.det-empty{padding:48px 34px;color:var(--muted);font-size:.92rem;max-width:52ch}
+.det-head{padding:20px 24px 14px;border-bottom:1px solid var(--line);border-top:3px solid var(--mc);border-radius:10px 10px 0 0}
+.det-head .crumb{font-size:.74rem;color:var(--muted);letter-spacing:.05em}
+.det-head h3{font-size:1.28rem;font-weight:650;margin-top:3px}
+.det-head h3 .cd{color:var(--mc);margin-right:8px}
+.det-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.det-body{padding:18px 24px 24px}
+.det-body h4{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:18px 0 8px}
+.det-body h4:first-child{margin-top:0}
+.det-purpose{font-size:.94rem;max-width:76ch}
+ul.plain{list-style:none;display:flex;flex-direction:column;gap:5px;font-size:.89rem}
+ul.plain li{padding-left:16px;position:relative}
+ul.plain li::before{content:"";position:absolute;left:2px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--mc)}
+.tabrow{display:grid;grid-template-columns:170px 1fr;gap:8px;padding:7px 0;border-bottom:1px dashed var(--line);font-size:.87rem}
+.tabrow:last-child{border-bottom:none}
+.tabrow .tn{font-weight:600}
+@media (max-width:640px){.tabrow{grid-template-columns:1fr}}
+.io{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.io{grid-template-columns:1fr}}
+.io .iohead{font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:7px}
+.iolist{display:flex;flex-direction:column;gap:6px}
+.iorow{display:flex;gap:8px;align-items:baseline;font-size:.83rem}
+.iorow .why{color:var(--muted)}
+.bda-list{display:flex;flex-direction:column;gap:5px;font-size:.86rem}
+.bda-list .b{display:flex;gap:9px}
+.bda-list .ref{font-weight:700;color:var(--accent-ink);font-size:.78rem;white-space:nowrap;min-width:96px}
+.aibox{border-left:3px solid #7c5cff;background:#f4f1ff;color:#3a2d6b;border-radius:0 8px 8px 0;padding:11px 14px;font-size:.86rem;margin-top:16px}
+.aichip{display:inline-block;font-size:.66rem;letter-spacing:.06em;font-weight:700;color:#fff;background:#7c5cff;border-radius:4px;padding:2px 6px;margin-right:7px;vertical-align:1px}
+.noai{display:inline-block;font-size:.66rem;letter-spacing:.06em;font-weight:700;color:#0f6b3f;background:#d9f2e4;border-radius:4px;padding:2px 6px}
+.rdy{font-weight:700;font-size:.8rem}
+.rdy.r{color:#b4232a}.rdy.y{color:#9a6a00}.rdy.g{color:#0f6b3f}
+.openbox{border-left:3px solid var(--warn-line);background:var(--warn-bg);color:var(--warn-ink);border-radius:0 8px 8px 0;padding:11px 14px;font-size:.86rem;margin-top:16px}
+.openbox b{letter-spacing:.05em;font-size:.74rem;text-transform:uppercase}
+
+/* role legend */
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.legend .chip{font-weight:500}
+
+/* ============ FLOWS ============ */
+.flow{padding:18px 22px;margin-bottom:14px}
+.flow h3{font-size:1.02rem;font-weight:650}
+.flow .fd{font-size:.88rem;color:var(--muted);margin:5px 0 14px;max-width:82ch}
+.steps-wrap{overflow-x:auto;padding-bottom:4px}
+.steps{display:flex;align-items:stretch;gap:0;min-width:min-content}
+.step{flex:0 0 auto;max-width:200px;min-width:128px;border:1px solid var(--line-strong);border-radius:8px;padding:8px 11px;background:var(--panel);cursor:pointer}
+.step:hover{border-color:var(--sc)}
+.step .scd{font-size:.73rem;font-weight:700;color:var(--sc)}
+.step .sl{font-size:.79rem;line-height:1.35;margin-top:2px}
+.step.auto{border-style:dashed;cursor:default;background:var(--panel-2)}
+.step.auto .scd{color:var(--muted)}
+.sarrow{align-self:center;padding:0 7px;color:var(--muted);flex:0 0 auto}
+
+/* ============ COVERAGE ============ */
+.okchip{background:var(--accent-soft);color:var(--accent-ink);border-color:transparent}
+.openitem{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.openitem:last-child{border-bottom:none}
+.openitem .n{font-weight:700;color:var(--warn-ink);background:var(--warn-bg);border-radius:6px;text-align:center;height:26px;line-height:26px;font-size:.8rem}
+.openitem .t{font-weight:600}
+.openitem .d{color:var(--muted);font-size:.86rem;margin-top:3px;max-width:88ch}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media print{.side{display:none}.app{grid-template-columns:1fr}.page{display:block!important;page-break-after:always}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="side">
+  <div class="brand">
+    <div class="kicker">Báo cáo đề xuất</div>
+    <h1>DMP — Hệ thống Quản trị dữ liệu</h1>
+    <div class="sub">Data Management Platform<br>8 module · 27 menu · lộ trình 5 giai đoạn</div>
+  </div>
+  <nav class="nav" id="nav">
+    <button data-page="overview" class="on"><span class="no">1</span>Tổng quan hệ thống</button>
+    <button data-page="requirements"><span class="no">2</span>Yêu cầu từ BDA</button>
+    <button data-page="map"><span class="no">3</span>Bản đồ chức năng</button>
+    <button data-page="flows"><span class="no">4</span>Luồng nghiệp vụ</button>
+    <button data-page="coverage"><span class="no">5</span>Đối chiếu &amp; điểm mở</button>
+    <button data-page="ai"><span class="no">6</span>Ứng dụng AI</button>
+  </nav>
+  <div class="foot">Tài liệu trình bày nội bộ · 08/2026<br>Nguồn: 6 tài liệu yêu cầu BDA + đặc tả chức năng DMP v1.0</div>
+</aside>
+
+<!-- ================= MAIN ================= -->
+<main class="main">
+
+<!-- ========== PAGE 1: OVERVIEW ========== -->
+<section class="page on" id="page-overview">
+  <div class="page-head">
+    <div class="kicker">1 · Tổng quan</div>
+    <h2>DMP là gì và đứng ở đâu trong hạ tầng dữ liệu hiện tại</h2>
+    <p class="lead">DMP (Data Management Platform) là hệ thống quản trị dữ liệu nội bộ: nơi khai báo, phê duyệt và tra cứu tập trung toàn bộ thông tin mô tả dữ liệu (metadata), luồng dữ liệu (lineage), chất lượng, phân quyền, tuân thủ và dữ liệu chủ. DMP không lưu dữ liệu nghiệp vụ — dữ liệu vẫn nằm ở hệ thống nguồn và kho dữ liệu; DMP kết nối để đọc cấu trúc, chạy kiểm tra và ghi nhận kết quả.</p>
+  </div>
+
+  <div class="stats">
+    <div class="card stat"><div class="v">6</div><div class="k">nhóm chức năng BDA yêu cầu</div></div>
+    <div class="card stat"><div class="v">5</div><div class="k">giai đoạn triển khai (GĐ1–GĐ5)</div></div>
+    <div class="card stat"><div class="v">8</div><div class="k">module trên hệ thống</div></div>
+    <div class="card stat"><div class="v">27</div><div class="k">menu chức năng</div></div>
+  </div>
+
+  <div class="section-label">Luồng dữ liệu hiện tại và phạm vi quản lý của DMP</div>
+  <div class="card">
+    <div class="pipe-wrap">
+      <div class="pipe">
+        <div class="pnode">
+          <div class="t">Hệ thống sản phẩm</div>
+          <div class="d">DB nghiệp vụ (CRM, tính cước, giao dịch…)</div>
+          <div class="dmp"><span class="chip mchip" data-goto="1.2" style="color:var(--m1)"><span class="cd">1.2</span> Hệ thống &amp; Nguồn</span></div>
+        </div>
+        <div class="parrow">→</div>
+        <div class="pnode">
+          <div class="t">Đồng bộ về PTDL</div>
+          <div class="d">DE đồng bộ · kênh vào: upload, SFTP, API, Kafka</div>
+          <div class="dmp"><span class="chip mchip" data-goto="4.2" style="color:var(--m4)"><span class="cd">4.2</span> Cửa nạp</span></div>
+        </div>
+        <div class="parrow">→</div>
+        <div class="pnode">
+          <div class="t">Kho dữ liệu</div>
+          <div class="d">HDFS / Hive (L1→L6)</div>
+          <div class="dmp"><span class="chip mchip" data-goto="1.1" style="color:var(--m1)"><span class="cd">1.1</span> Bảng dữ liệu</span></div>
+        </div>
+        <div class="parrow">→</div>
+        <div class="pnode">
+          <div class="t">ETL / Xử lý</div>
+          <div class="d">Pentaho · SparkSQL · lịch Rundeck</div>
+          <div class="dmp"><span class="chip mchip" data-goto="4.1" style="color:var(--m4)"><span class="cd">4.1</span> Job</span></div>
+        </div>
+        <div class="parrow">→</div>
+        <div class="pnode">
+          <div class="t">Bảng output / Mart</div>
+          <div class="d">Bảng kết quả phục vụ khai thác</div>
+          <div class="dmp"><span class="chip mchip" data-goto="1.1" style="color:var(--m1)"><span class="cd">1.1</span> Bảng dữ liệu</span></div>
+        </div>
+        <div class="parrow">→</div>
+        <div class="pnode">
+          <div class="t">Khai thác</div>
+          <div class="d">Báo cáo phòng ban (PYC qua Jira) · luồng phân tích chuyên sâu</div>
+          <div class="dmp"><span class="chip mchip" data-goto="1.3" style="color:var(--m1)"><span class="cd">1.3</span> Báo cáo &amp; Chỉ tiêu</span></div>
+        </div>
+      </div>
+      <div class="pipe-in">
+        <span class="lbl">Phủ trên toàn chuỗi:</span>
+        <span class="chip mchip" data-goto="2.3" style="color:var(--m2)"><span class="cd">2.3</span> Lineage — truy vết nguồn → đích</span>
+        <span class="chip mchip" data-goto="3.2" style="color:var(--m3)"><span class="cd">3.x</span> Data Quality — kiểm tra chất lượng</span>
+        <span class="chip mchip" data-goto="5.2" style="color:var(--m5)"><span class="cd">5.x</span> Security — kiểm soát truy cập</span>
+        <span class="chip mchip" data-goto="5.4" style="color:var(--m5)"><span class="cd">5.4</span> Audit log</span>
+      </div>
+    </div>
+    <div class="pipe-legend">Nhãn màu dưới mỗi khối là menu DMP quản lý khối đó — bấm để mở chi tiết ở trang Bản đồ chức năng.</div>
+  </div>
+
+  <div class="callout"><b>Vị trí của DMP:</b> một lớp quản trị đặt cạnh pipeline hiện có. Mỗi thực thể trong chuỗi trên (hệ thống nguồn, kênh vào, bảng, job ETL, báo cáo) được khai báo thành một đối tượng có người phụ trách, có trạng thái phê duyệt — từ đó hệ thống tự dựng lineage, tự chạy kiểm tra chất lượng, tự áp chính sách truy cập và tự tổng hợp bằng chứng tuân thủ.</div>
+
+  <div class="callout">
+    <b>Ranh giới khi ứng dụng AI</b>
+    <ul class="plain" style="margin-top:9px">
+      <li>AI đọc mô tả, quan hệ luồng và câu lệnh SQL — <b>không đọc nội dung dữ liệu</b>, không lấy mẫu dòng dữ liệu</li>
+      <li>Mọi đề xuất của AI phải qua người duyệt mới có hiệu lực</li>
+      <li>Hai trong bảy ứng dụng không dùng AI — chỉ là thống kê trên số liệu vận hành</li>
+    </ul>
+  </div>
+
+  <div class="section-label">Bài toán BDA đặt ra — 8 vấn đề hiện trạng</div>
+  <div class="card tb-wrap">
+    <table class="tb">
+      <tr><th style="width:32%">Vấn đề</th><th>Tác động</th></tr>
+      <tr><td>Dữ liệu chưa được quản lý tập trung; thông tin về nguồn, bảng, báo cáo, chỉ tiêu nằm rải rác nhiều công cụ</td><td>Tốn thời gian tìm kiếm, khó xác định nguồn gốc và người phụ trách; chậm phát triển và xử lý sự cố</td></tr>
+      <tr><td>Thiếu định nghĩa thống nhất — một chỉ tiêu nhiều cách hiểu, cách tính</td><td>Số liệu giữa các đơn vị không đồng nhất</td></tr>
+      <tr><td>Không rõ trách nhiệm — chưa xác định người sở hữu dữ liệu, đầu mối quản trị</td><td>Lỗi phát sinh nhưng khó phân công và theo dõi</td></tr>
+      <tr><td>Khó truy vết — không biết báo cáo lấy dữ liệu từ đâu, qua bước xử lý nào</td><td>Khó phân tích nguyên nhân và đánh giá ảnh hưởng khi thay đổi</td></tr>
+      <tr><td>Chất lượng bị động — lỗi chỉ được phát hiện sau khi dữ liệu đã được sử dụng</td><td>Ảnh hưởng báo cáo, chỉ tiêu và quyết định kinh doanh</td></tr>
+      <tr><td>Rủi ro bảo mật — dữ liệu cá nhân/nhạy cảm chưa được nhận diện và kiểm soát</td><td>Nguy cơ truy cập hoặc chia sẻ sai phạm vi</td></tr>
+      <tr><td>Dữ liệu chủ không thống nhất — khách hàng, sản phẩm trùng hoặc khác mã giữa hệ thống</td><td>Đối soát khó, báo cáo không nhất quán</td></tr>
+      <tr><td>Thiếu bằng chứng tuân thủ — chính sách, thời hạn lưu trữ, nhật ký chưa được quản lý đủ</td><td>Khó kiểm toán và chứng minh sử dụng dữ liệu đúng quy định</td></tr>
+    </table>
+  </div>
+
+  <div class="section-label">Tám câu hỏi hệ thống phải trả lời được sau triển khai</div>
+  <div class="card tb-wrap">
+    <table class="tb">
+      <tr><th>Câu hỏi nghiệp vụ (Phương án BDA §10)</th><th style="width:34%">Menu trả lời</th></tr>
+      <tr><td>Đang có những dữ liệu nào, nằm ở đâu, có ý nghĩa gì?</td><td><span class="chip mchip" data-goto="1.1" style="color:var(--m1)"><span class="cd">1.1</span></span> <span class="chip mchip" data-goto="1.2" style="color:var(--m1)"><span class="cd">1.2</span></span> + tìm kiếm toàn hệ thống</td></tr>
+      <tr><td>Ai sở hữu, ai cập nhật metadata, ai xử lý lỗi?</td><td><span class="chip mchip" data-goto="1.1" style="color:var(--m1)"><span class="cd">1.1</span></span> <span class="chip mchip" data-goto="1.4" style="color:var(--m1)"><span class="cd">1.4</span></span> <span class="chip mchip" data-goto="5.1" style="color:var(--m5)"><span class="cd">5.1</span></span></td></tr>
+      <tr><td>Dữ liệu đến từ đâu, qua job nào, dùng trong báo cáo/chỉ tiêu nào?</td><td><span class="chip mchip" data-goto="2.3" style="color:var(--m2)"><span class="cd">2.3</span></span> <span class="chip mchip" data-goto="4.1" style="color:var(--m4)"><span class="cd">4.1</span></span> <span class="chip mchip" data-goto="1.3" style="color:var(--m1)"><span class="cd">1.3</span></span></td></tr>
+      <tr><td>Dữ liệu có đạt chất lượng không, lỗi đang ở trạng thái nào?</td><td><span class="chip mchip" data-goto="3.2" style="color:var(--m3)"><span class="cd">3.2</span></span> <span class="chip mchip" data-goto="3.3" style="color:var(--m3)"><span class="cd">3.3</span></span></td></tr>
+      <tr><td>Dữ liệu có nhạy cảm không, ai được truy cập, quyền còn hiệu lực không?</td><td><span class="chip mchip" data-goto="2.2" style="color:var(--m2)"><span class="cd">2.2</span></span> <span class="chip mchip" data-goto="5.2" style="color:var(--m5)"><span class="cd">5.2</span></span> <span class="chip mchip" data-goto="5.3" style="color:var(--m5)"><span class="cd">5.3</span></span></td></tr>
+      <tr><td>Dữ liệu lưu bao lâu, chia sẻ và xóa theo chính sách nào?</td><td><span class="chip mchip" data-goto="6.1" style="color:var(--m6)"><span class="cd">6.1</span></span> <span class="chip mchip" data-goto="6.2" style="color:var(--m6)"><span class="cd">6.2</span></span></td></tr>
+      <tr><td>Bản ghi khách hàng / sản phẩm / danh mục chuẩn là bản ghi nào?</td><td><span class="chip mchip" data-goto="7.2" style="color:var(--m7)"><span class="cd">7.2</span></span></td></tr>
+      <tr><td>Thay đổi một bảng/cột thì đối tượng và người dùng nào bị ảnh hưởng?</td><td><span class="chip mchip" data-goto="2.3" style="color:var(--m2)"><span class="cd">2.3</span></span> phân tích ảnh hưởng</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ========== PAGE 2: REQUIREMENTS ========== -->
+<section class="page" id="page-requirements">
+  <div class="page-head">
+    <div class="kicker">2 · Yêu cầu từ BDA</div>
+    <h2>6 tài liệu yêu cầu — nội dung chính và menu đáp ứng</h2>
+    <p class="lead">Đội BDA gửi 1 tài liệu "Phương án xây dựng Hệ thống Quản trị dữ liệu" và 5 tài liệu yêu cầu chi tiết theo giai đoạn. Phần này tóm tắt yêu cầu của từng giai đoạn; mỗi yêu cầu (FR) được gắn menu đáp ứng trên hệ thống — bấm vào menu để mở chi tiết.</p>
+  </div>
+
+  <div class="section-label">6 nhóm chức năng trong Phương án tổng thể</div>
+  <div class="card tb-wrap" style="margin-bottom:26px">
+    <table class="tb">
+      <tr><th style="width:30%">Nhóm chức năng</th><th style="width:34%">Câu hỏi cần trả lời</th><th>Module đáp ứng</th></tr>
+      <tr><td>Data Catalog &amp; Metadata</td><td>Đơn vị đang có những dữ liệu nào?</td><td><span class="chip" style="color:var(--m1)">① Data Catalog</span></td></tr>
+      <tr><td>Data Lineage</td><td>Dữ liệu lấy từ đâu và sử dụng ở đâu?</td><td><span class="chip" style="color:var(--m2)">② Governance</span> <span class="chip" style="color:var(--m4)">④ Ingestion &amp; Orchestration</span></td></tr>
+      <tr><td>Data Quality</td><td>Dữ liệu có đầy đủ, chính xác, kịp thời không?</td><td><span class="chip" style="color:var(--m3)">③ Data Quality</span></td></tr>
+      <tr><td>Data Classification &amp; Security</td><td>Dữ liệu nào nhạy cảm, ai được phép sử dụng?</td><td><span class="chip" style="color:var(--m5)">⑤ Data Security</span> <span class="chip" style="color:var(--m2)">② Governance (2.2)</span></td></tr>
+      <tr><td>Data Policy &amp; Compliance</td><td>Dữ liệu phải được quản lý theo quy định nào?</td><td><span class="chip" style="color:var(--m6)">⑥ Policy &amp; Compliance</span></td></tr>
+      <tr><td>Master Data Management</td><td>Dữ liệu dùng chung nào cần thống nhất?</td><td><span class="chip" style="color:var(--m7)">⑦ Master Data (MDM)</span></td></tr>
+      <tr><td>Chức năng nền (Phương án §6): người dùng, phê duyệt, cảnh báo, lịch sử, báo cáo tổng hợp</td><td>—</td><td><span class="chip" style="color:var(--m8)">⑧ Operations</span> <span class="chip" style="color:var(--m5)">5.1</span> <span class="chip" style="color:var(--m2)">2.4</span> <span class="chip" style="color:var(--m3)">3.4</span></td></tr>
+    </table>
+  </div>
+
+  <div class="section-label">Yêu cầu chi tiết theo 5 giai đoạn — bấm để mở</div>
+  <div id="gd-list"></div>
+</section>
+
+<!-- ========== PAGE 3: SYSTEM MAP ========== -->
+<section class="page" id="page-map">
+  <div class="page-head">
+    <div class="kicker">3 · Bản đồ chức năng</div>
+    <h2>8 module · 27 menu — bấm module để mở danh sách, bấm menu để xem chi tiết</h2>
+    <p class="lead">Mỗi menu quản lý một loại thực thể. Phần "Nhận từ / Cấp cho" trong chi tiết cho biết menu lấy dữ liệu khai báo từ đâu và kết quả được menu nào dùng lại — đó là quan hệ vận hành giữa các màn.</p>
+  </div>
+  <div class="legend" id="role-legend"></div>
+  <div class="map">
+    <div class="modlist" id="modlist"></div>
+    <div class="card detail" id="detail">
+      <div class="det-empty">Chọn một menu ở cột bên trái để xem: chức năng, thông tin khai báo, các tab, quan hệ với menu khác và yêu cầu BDA tương ứng.<br><br>Gợi ý bắt đầu: <b>1.1 Bảng dữ liệu</b> — menu trung tâm mà các module khác đều tham chiếu.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 4: FLOWS ========== -->
+<section class="page" id="page-flows">
+  <div class="page-head">
+    <div class="kicker">4 · Luồng nghiệp vụ</div>
+    <h2>Tám luồng vận hành — các menu phối hợp với nhau như thế nào</h2>
+    <p class="lead">Khung liền nét là bước người dùng thao tác trên menu (bấm để mở chi tiết); khung đứt nét là bước hệ thống tự thực hiện, không ai phải bấm gì.</p>
+  </div>
+  <div id="flow-list"></div>
+</section>
+
+<!-- ========== PAGE 5: COVERAGE ========== -->
+<section class="page" id="page-coverage">
+  <div class="page-head">
+    <div class="kicker">5 · Đối chiếu &amp; điểm mở</div>
+    <h2>Mức đáp ứng yêu cầu BDA và các điểm cần chốt tiếp</h2>
+    <p class="lead">Thiết kế hiện tại phủ đủ 6/6 nhóm chức năng BDA. Bốn trong năm điểm cần chốt bên dưới đã có phương án — chi tiết ở trang 6. Các điểm còn lại là quyết định nghiệp vụ hoặc kỹ thuật cần làm rõ với BDA / rà soát hệ thống hiện có trước khi xây thật.</p>
+  </div>
+
+  <div class="section-label">Bảng đối chiếu 6 nhóm chức năng</div>
+  <div class="card tb-wrap" style="margin-bottom:8px">
+    <table class="tb">
+      <tr><th style="width:27%">Nhóm chức năng BDA</th><th style="width:16%">Nguồn yêu cầu</th><th>Đáp ứng trên hệ thống</th></tr>
+      <tr><td>Data Catalog &amp; Metadata</td><td class="mono">GĐ2 FR-01…05, §5</td><td><span class="chip okchip">Đáp ứng</span> menu 1.1–1.5, phê duyệt 2.4, tiêu chuẩn metadata 8.2, tìm kiếm toàn hệ thống</td></tr>
+      <tr><td>Data Lineage</td><td class="mono">GĐ2 FR-06, §5.7</td><td><span class="chip okchip">Đáp ứng</span> 2.3 (bản đồ + khai báo thủ công + phân tích ảnh hưởng), tự thu thập từ SQL job 4.1</td></tr>
+      <tr><td>Data Quality</td><td class="mono">GĐ3 FR-01…05</td><td><span class="chip okchip">Đáp ứng</span> 3.1–3.4 + cổng chất lượng tại cửa nạp 4.2 (chặn trước khi ghi — vượt yêu cầu "phát hiện sớm")</td></tr>
+      <tr><td>Data Classification &amp; Security</td><td class="mono">GĐ4 FR-01…04</td><td><span class="chip okchip">Đáp ứng</span> 2.2 (2 trục: mức phân loại 4 cấp + nhãn nhạy cảm), 5.2 (che, lọc dòng, hạn chế tải), 5.3, 5.4</td></tr>
+      <tr><td>Data Policy &amp; Compliance</td><td class="mono">GĐ4 FR-05, 06</td><td><span class="chip okchip">Đáp ứng</span> 6.1–6.3, mục kiểm chấm tự động từ dữ liệu các module khác</td></tr>
+      <tr><td>Master Data Management</td><td class="mono">GĐ5 FR-01…06</td><td><span class="chip okchip">Đáp ứng</span> 7.1, 7.2 (bản ghi nguồn → nghi ngờ trùng → bản ghi chuẩn → phân phối)</td></tr>
+      <tr><td>Chức năng nền</td><td class="mono">Phương án §6</td><td><span class="chip okchip">Đáp ứng</span> 5.1 (người dùng, 5 vai trò), 2.4 (phê duyệt), 3.4 (cảnh báo), 8.1 (chỉ số), 8.2 (cấu hình)</td></tr>
+    </table>
+  </div>
+  <p class="note">Trạng thái sản phẩm: demo front-end đầy đủ 27 menu chạy được trên dữ liệu mẫu, dùng để thống nhất thiết kế; phần backend, kết nối hạ tầng thật và cơ chế thu thập tự động chưa xây dựng.</p>
+
+  <div class="section-label">Điểm cần chốt trước khi xây dựng — NEED INFO</div>
+  <div class="card" style="padding:6px 22px">
+    <div class="openitem">
+      <div class="n">1</div>
+      <div><div class="t">Mô hình hóa Báo cáo — Chỉ tiêu — bảng output</div>
+      <div class="d">GĐ2 §5.5 yêu cầu quản lý báo cáo kèm danh sách chỉ tiêu, định nghĩa và công thức tính từng chỉ tiêu, điều kiện lấy dữ liệu, nguồn dữ liệu sử dụng. Định nghĩa thực thể đề xuất: Báo cáo = sản phẩm đầu ra cho đơn vị sử dụng (file Excel / màn hình BI / bảng dữ liệu — một báo cáo Excel có thể gồm nhiều sheet, mỗi sheet từ một bảng output); Chỉ tiêu = một đại lượng nghiệp vụ có định nghĩa + công thức, thuộc báo cáo và trỏ về bảng/cột nguồn. Cần chốt với BDA mức chi tiết quản lý: đến báo cáo, đến sheet, hay đến từng bảng output.<div class="aibox" style="margin-top:11px"><span class="aichip">ĐÃ CÓ PHƯƠNG ÁN</span>Mô hình hóa tới mức bộ dữ liệu kèm lớp ngữ nghĩa — mỗi cột khai vai trò nghiệp vụ (chiều phân tích / chỉ số đo lường / trục thời gian / khóa liên kết), đơn vị đo và nhãn nhạy cảm. Tableau / VDSD kéo bộ này vào dựng biểu đồ; DMP không dựng báo cáo. Chi tiết ở trang 6.</div></div></div>
+    </div>
+    <div class="openitem">
+      <div class="n">2</div>
+      <div><div class="t">Hợp nhất 2 tính năng hiện có trên SQLWF: Quản lý danh mục và Quản lý upload</div>
+      <div class="d">SQLWF đang có: (a) Quản lý danh mục — khai template schema động (MongoDB), phê duyệt, so sánh phiên bản, append/overwrite, đồng bộ MongoDB → HDFS theo job; (b) Quản lý upload — upload file → HDFS (append), job đồng bộ cuối ngày để truy vấn được. Hai tính năng này trùng phạm vi với menu 1.5 Danh mục tham chiếu và 4.2 Cửa nạp dữ liệu của DMP. Hướng đề xuất: nâng cấp và hợp nhất về DMP, nhưng cần rà soát source code SQLWF để nắm hiện trạng trước khi chốt phương án — sẽ có tài liệu phân tích riêng.</div></div>
+    </div>
+    <div class="openitem">
+      <div class="n">3</div>
+      <div><div class="t">Cơ chế thu thập metadata và lineage tự động từ hạ tầng thật</div>
+      <div class="d">GĐ2 §7 yêu cầu thu thập tự động cấu trúc bảng/cột và quan hệ luồng dữ liệu. Cần khảo sát kỹ thuật với Hive metastore, Pentaho, SparkSQL, Rundeck để xác định mức tự động hóa khả thi từng đợt; demo hiện chạy trên dữ liệu mẫu.<div class="aibox" style="margin-top:11px"><span class="aichip">ĐÃ CÓ PHƯƠNG ÁN</span>Thu thập theo hai bước, làm được trước khi có kết nối Hive metastore. Bước 1 suy từ tên cột, kiểu dữ liệu và cột phân vùng — khoảng 60% chính xác, không cần hạ tầng. Bước 2 phân tích câu lệnh SQL của 1.842 job mà SQLWF đã lưu sẵn — lên khoảng 80–85%. Đoán sai không gây hậu quả: người dùng thấy gợi ý lạ thì sửa. Chi tiết ở trang 6.</div></div></div>
+    </div>
+    <div class="openitem">
+      <div class="n">4</div>
+      <div><div class="t">Tích hợp Jira và kênh thông báo</div>
+      <div class="d">Phương án §6 yêu cầu tích hợp công cụ quản lý công việc. Luồng PYC báo cáo hiện tạo trên Jira — cần chốt: phiếu sự cố chất lượng (3.3) và yêu cầu cấp quyền (5.3) đồng bộ hai chiều với Jira hay quản lý nội bộ trong DMP; kênh gửi cảnh báo (email / Telegram / SMS) dùng hạ tầng nào.<div class="aibox" style="margin-top:11px"><span class="aichip">ĐÃ CÓ PHƯƠNG ÁN</span>Đồng bộ một chiều từ Jira về (chỉ đọc) cho luồng yêu cầu dữ liệu, kèm bản phân tích phương án do hệ thống dựng — xem luồng F8 và trang 6. Kênh cảnh báo dùng module Telegram đã chạy trên SQLWF; SMS chỉ dùng cho mức nghiêm trọng nhất.</div></div></div>
+    </div>
+    <div class="openitem">
+      <div class="n">5</div>
+      <div><div class="t">Phạm vi thí điểm Giai đoạn 1</div>
+      <div class="d">GĐ1 yêu cầu chọn phạm vi thí điểm theo 7 nhóm đối tượng (hệ thống, bảng, job, kênh, báo cáo/chỉ tiêu, thuật ngữ, lineage trọng yếu) trước khi triển khai rộng. Cần thống nhất với BDA danh sách hệ thống và miền dữ liệu làm trước.<div class="aibox" style="margin-top:11px"><span class="aichip">ĐÃ CÓ PHƯƠNG ÁN</span>Chọn 2–3 miền dữ liệu đã khai tương đối đầy đủ, hoàn thiện đủ sáu nhóm thông tin ở trang 6 cho riêng miền đó, đo bằng chỉ số cụ thể rồi mới mở rộng. Bảng hiện trạng khai báo ở trang 6 cho biết miền nào đủ điều kiện làm trước.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 6: AI ========== -->
+<section class="page" id="page-ai">
+  <div class="page-head">
+    <div class="kicker">6 · Ứng dụng AI</div>
+    <h2>Bảy điểm ứng dụng, điều kiện và ranh giới</h2>
+    <p class="lead">Bảy ứng dụng nằm trong các menu đã có, không phát sinh menu mới. AI đọc mô tả, quan hệ luồng và câu lệnh SQL — không đọc nội dung dữ liệu. Mọi đề xuất đều qua người duyệt.</p>
+  </div>
+
+  <div class="section-label">Ranh giới dữ liệu — bốn loại thông tin</div>
+  <div class="card tb-wrap" style="margin-bottom:8px">
+    <table class="tb">
+      <tr><th style="width:22%">Loại</th><th style="width:34%">Ví dụ</th><th>Được gửi cho AI</th></tr>
+      <tr><td><b>Nội dung dữ liệu</b></td><td>Giá trị trong ô: tên khách hàng, số điện thoại, số dư</td><td><span class="chip" style="color:var(--warn-line)">Không</span> Không có ngoại lệ, kể cả lấy mẫu vài dòng để đoán kiểu cột</td></tr>
+      <tr><td><b>Chỉ số thống kê</b></td><td>Số dòng, tỷ lệ giá trị rỗng, thời điểm nạp xong</td><td><span class="chip okchip">Được</span> Nhưng phần lớn tính năng dùng loại này <b>không cần AI</b></td></tr>
+      <tr><td><b>Siêu dữ liệu</b></td><td>Tên bảng, tên cột, mô tả nghiệp vụ, nhãn phân loại, đầu mối</td><td><span class="chip okchip">Được</span> Chỉ với AI đặt trong mạng nội bộ</td></tr>
+      <tr><td><b>Mã lệnh</b></td><td>Câu SQL, cấu hình job, quan hệ luồng xử lý</td><td><span class="chip okchip">Được</span> Chỉ với AI nội bộ — đây là thứ module tối ưu SQL của SQLWF đang gửi hiện nay</td></tr>
+    </table>
+  </div>
+  <p class="note">SQLWF đã có sẵn hệ thống AI đang vận hành — module tối ưu câu lệnh SQL, quy trình <i>đề xuất → người duyệt → áp dụng</i>. Gói tin gửi sang AI chỉ mang câu lệnh và mô tả, không có trường nào chứa dòng dữ liệu. Bảy ứng dụng dưới đây <b>mở rộng hệ thống đó</b>, không xây mới.</p>
+
+  <div class="section-label">Bảy điểm ứng dụng — đều nằm trong menu đã có</div>
+  <div class="card tb-wrap" style="margin-bottom:8px">
+    <table class="tb">
+      <tr><th style="width:4%">#</th><th style="width:24%">Ứng dụng</th><th style="width:9%">Menu</th><th style="width:32%">Hệ thống đọc gì</th><th>Người quyết gì</th></tr>
+      <tr><td class="mono">1</td><td><b>Máy soạn mô tả nghiệp vụ, người duyệt</b></td><td><span class="chip mchip" data-goto="1.1"><span class="cd">1.1</span></span></td><td>Câu lệnh của job sinh ra bảng · quy ước đặt tên · bảng cùng nhóm đã có mô tả · tài liệu và yêu cầu cũ</td><td>Đầu mối duyệt từng mô tả. Bản nháp hiển thị khác bản đã duyệt</td></tr>
+      <tr><td class="mono">2</td><td><b>Tự thiết lập ngưỡng cảnh báo từ lịch sử</b> <span class="noai">KHÔNG DÙNG AI</span></td><td><span class="chip mchip" data-goto="3.2"><span class="cd">3.2</span></span></td><td>30 ngày số liệu vận hành: số dòng, giờ nạp xong, tỷ lệ rỗng, số cột. Phép tính là đếm, cộng, chia, so sánh</td><td>Đầu mối xác nhận ngưỡng lần đầu và chỉnh tay được</td></tr>
+      <tr><td class="mono">3</td><td><b>Sinh luật chất lượng từ mô tả tiếng Việt</b></td><td><span class="chip mchip" data-goto="3.2"><span class="cd">3.2</span></span></td><td>Câu mô tả người dùng gõ + cấu trúc cột của bảng</td><td>Người xác nhận luật đã sinh trước khi lưu</td></tr>
+      <tr><td class="mono">4</td><td><b>Đăng ký theo dõi và cảnh báo theo ngôn ngữ người dùng</b> <span class="noai">KHÔNG DÙNG AI</span></td><td><span class="chip mchip" data-goto="3.4"><span class="cd">3.4</span></span></td><td>Quan hệ luồng dữ liệu · lịch sử truy vấn để biết thời điểm người dùng thường mở số liệu</td><td>Người dùng tự chọn theo dõi cái gì và nhận qua kênh nào</td></tr>
+      <tr><td class="mono">5</td><td><b>Trợ lý tra cứu khi viết job</b></td><td><span class="chip mchip" data-goto="4.1"><span class="cd">4.1</span></span></td><td>Metadata bảng và cột.<br>Tra cứu tại chỗ và cảnh báo bảng ngừng nạp <b>không cần AI</b>; chỉ mức sinh khung câu lệnh mới dùng</td><td>BDA vẫn viết và chạy thử như hiện nay</td></tr>
+      <tr><td class="mono">6</td><td><b>Đồng bộ yêu cầu Jira, dựng bản phân tích phương án</b></td><td><span class="chip mchip" data-goto="5.3"><span class="cd">5.3</span></span></td><td>Mô tả yêu cầu · danh mục bảng · quan hệ luồng · điểm chất lượng · yêu cầu đã xử lý trước đó</td><td>BDA duyệt và sửa. Hệ thống không tạo job, không chạy gì</td></tr>
+      <tr><td class="mono">7</td><td><b>Bộ dữ liệu kèm lớp ngữ nghĩa cho Tableau / VDSD</b></td><td><span class="chip mchip" data-goto="1.3"><span class="cd">1.3</span></span></td><td>Định nghĩa chỉ tiêu · vai trò cột · đơn vị đo · nhãn nhạy cảm</td><td>Đội báo cáo dựng biểu đồ như hiện nay. DMP không dựng báo cáo</td></tr>
+    </table>
+  </div>
+
+  
+
+  <div class="section-label">Nền tảng bắt buộc — vai trò nghiệp vụ của cột</div>
+  <div class="card" style="padding:18px 22px;margin-bottom:8px">
+    <p class="det-purpose">Muốn hệ thống đề xuất được cách tính cho một yêu cầu báo cáo, nó phải biết mỗi cột đóng vai trò gì. Hệ thống hiện <b>chưa có khái niệm này</b>. Đây là điều kiện chung cho ứng dụng số 6 và số 7 — làm xong một lần thì cả hai chạy được.</p>
+    <div class="io" style="margin-top:6px">
+      <div><div class="iohead">Bốn vai trò</div>
+        <div class="iolist">
+          <div class="iorow"><span class="chip">Chiều phân tích</span><span class="why">cột dùng để nhóm dữ liệu — chi nhánh, nhóm sản phẩm</span></div>
+          <div class="iorow"><span class="chip">Chỉ số đo lường</span><span class="why">cột dùng để tính toán — doanh thu, số lượng</span></div>
+          <div class="iorow"><span class="chip">Trục thời gian</span><span class="why">cột xác định kỳ báo cáo — tháng, ngày</span></div>
+          <div class="iorow"><span class="chip">Khóa liên kết</span><span class="why">cột dùng để nối bảng — mã khách hàng</span></div>
+        </div>
+      </div>
+      <div><div class="iohead">Thu thập hai bước, không khai tay</div>
+        <div class="iolist">
+          <div class="iorow"><span class="chip okchip">Bước 1</span><span class="why">Suy từ tên cột, kiểu dữ liệu và cột phân vùng. Khoảng 60% chính xác, làm trong nửa ngày, không cần hạ tầng</span></div>
+          <div class="iorow"><span class="chip okchip">Bước 2</span><span class="why">Phân tích câu lệnh SQL của 1.842 job: cột nằm trong GROUP BY là chiều, trong SUM/AVG/COUNT là chỉ số, trong JOIN ON là khóa. Lên khoảng 80–85%</span></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:15px">
+      <div class="iohead">Vì sao nên làm sớm</div>
+      <ul class="plain" style="margin-top:8px">
+        <li>Đoán sai không gây hậu quả — hệ thống không ghi đè, không chặn ai; người dùng thấy gợi ý lạ thì sửa</li>
+        <li>Không cần đủ 100% mới dùng được. Bảng xuất hiện nhiều nhất trong câu lệnh job cũng là bảng được hỏi nhiều nhất</li>
+        <li>Câu lệnh job <b>SQLWF đã lưu sẵn trong cơ sở dữ liệu</b> — không cần kết nối Hive metastore, làm được sớm hơn phần còn lại của DMP</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-label">Điều kiện — sáu nhóm thông tin và mức sẵn sàng hiện nay</div>
+  <div class="card tb-wrap" style="margin-bottom:8px">
+    <table class="tb">
+      <tr><th style="width:16%">Nhóm</th><th style="width:34%">Thông tin cần có</th><th style="width:22%">Trả lời câu hỏi</th><th>Hiện trạng</th></tr>
+      <tr><td><b>Nhận diện</b></td><td>Bảng: miền, mô tả nghiệp vụ, lớp dữ liệu, đầu mối. Cột: mô tả, đơn vị đo, nhãn nhạy cảm</td><td>Chỉ tiêu này nằm ở bảng nào?</td><td><span class="rdy y">Một phần</span> — miền 62%, đầu mối 34%, mô tả nghiệp vụ 28%</td></tr>
+      <tr><td><b>Vai trò cột</b></td><td>Chiều phân tích · chỉ số đo lường · trục thời gian · khóa liên kết</td><td>Nhóm theo cột nào, tính chỉ tiêu gì?</td><td><span class="rdy r">Chưa có</span> — nhưng thu thập tự động được, xem khối trên</td></tr>
+      <tr><td><b>Tình trạng</b></td><td>Lịch nạp thông thường, điểm chất lượng, số sự cố, <b>độ sâu lịch sử — lưu được bao nhiêu tháng</b></td><td>Bảng này có tin được không?</td><td><span class="rdy r">Yếu</span> — 0,6% bảng có luật kiểm; chưa có trường độ sâu lịch sử</td></tr>
+      <tr><td><b>Nguồn gốc</b></td><td>Job nào sinh ra bảng, bảng đọc từ đâu, đánh dấu bảng chính thức, nhóm bảng trùng lặp</td><td>Ba bảng tên gần giống, dùng cái nào?</td><td><span class="rdy y">Có cơ chế</span> — chưa đo được bao nhiêu phần trăm job đã bật ghi nhận luồng</td></tr>
+      <tr><td><b>Yêu cầu đã xử lý</b></td><td>Mô tả yêu cầu cũ, bảng đã dùng, câu lệnh kết quả, thời gian thực hiện thực tế</td><td>Có phải làm lại từ đầu không?</td><td><span class="rdy r">Chưa có</span> — đang nằm ở Jira, chưa đồng bộ về</td></tr>
+      <tr><td><b>Quyền phát hành</b></td><td>Nhãn nhạy cảm, chính sách che, phạm vi được phát hành</td><td>Báo cáo này gửi ra ngoài phòng ban được không?</td><td><span class="rdy y">Có cơ chế</span> — 412 cột đã gắn nhãn, phạm vi phủ còn mỏng</td></tr>
+    </table>
+  </div>
+
+  <div class="callout warn">
+    <b>Đọc từ bảng trên</b>
+    <ul class="plain" style="margin-top:9px">
+      <li>Chưa thể triển khai ứng dụng <b>6</b> và <b>7</b> trên toàn bộ phạm vi ngay</li>
+      <li>Ba nhóm còn yếu nhất đều <b>bù được bằng cơ chế tự động</b>, không cần người khai tay:<br>
+          vai trò cột lấy từ câu lệnh job · tình trạng lấy từ quan sát 30 ngày · yêu cầu cũ lấy từ đồng bộ Jira rồi tự tích lũy</li>
+      <li>Đề nghị chọn <b>2–3 miền dữ liệu</b> đã khai tương đối đầy đủ làm trước, đo kết quả rồi mới mở rộng</li>
+    </ul>
+  </div>
+
+  <div class="section-label">Thứ tự triển khai</div>
+  <div class="card" style="padding:6px 22px;margin-bottom:8px">
+    <div class="openitem"><div class="n">1</div><div><div class="t">Ứng dụng 2 và 4 — giám sát và cảnh báo</div>
+      <div class="d">Không dùng AI, không phụ thuộc chất lượng khai báo — chạy được ngay.<br>Kết quả: bảng được giám sát từ <b>0,6% lên gần toàn bộ</b>; người dùng cuối lần đầu được cảnh báo khi số liệu họ đang dùng có vấn đề.</div></div></div>
+    <div class="openitem"><div class="n">2</div><div><div class="t">Vai trò cột, ứng dụng 1 và 3 — làm đầy khai báo</div>
+      <div class="d">Thu thập vai trò cột hai bước · máy soạn mô tả cho đầu mối duyệt · khai luật bằng tiếng Việt.<br><b>Giai đoạn quyết định</b> — ứng dụng 6 và 7 phụ thuộc hoàn toàn vào kết quả ở đây.</div></div></div>
+    <div class="openitem"><div class="n">3</div><div><div class="t">Ứng dụng 5 — trợ lý tra cứu khi viết job</div>
+      <div class="d">Đẩy metadata sang trình soạn SQL — tra cứu bảng tại chỗ, cảnh báo bảng ngừng nạp.<br>Hai mức đầu không cần AI. Làm được ngay khi khai báo đủ ở một vài miền.</div></div></div>
+    <div class="openitem"><div class="n">4</div><div><div class="t">Ứng dụng 6 và 7 — từ yêu cầu tới báo cáo</div>
+      <div class="d">Đồng bộ Jira · dựng bản phân tích phương án · cấp bộ dữ liệu kèm lớp ngữ nghĩa.<br>Triển khai trên miền thí điểm trước.<br>Chỉ số đo: <b>thời gian từ lúc nhận yêu cầu tới lúc bắt đầu viết SQL</b> — hiện khoảng 4 ngày.</div></div></div>
+  </div>
+  
+
+  <div class="section-label">Ba việc cam kết không làm</div>
+  <div class="card tb-wrap">
+    <table class="tb">
+      <tr><th style="width:38%">Không làm</th><th>Lý do</th></tr>
+      <tr><td><b>AI đọc dữ liệu mẫu để tự sinh mô tả cột hoặc tự đoán cột nhạy cảm</b></td><td>Đây là tính năng phổ biến nhất của các sản phẩm quản trị dữ liệu trên thị trường. <b>Chúng ta chủ động không làm</b> — ngữ nghĩa lấy từ câu lệnh job và khai báo của người dùng</td></tr>
+      <tr><td><b>Đưa nguyên văn tài liệu nội bộ cho AI xử lý</b></td><td>Tài liệu ra khỏi phạm vi kiểm soát, và kết quả không truy vết được tới điều khoản khi kiểm toán yêu cầu.<br>Cách thay thế: người đọc văn bản, khai thành danh mục quy định có cấu trúc tại module ⑥; hệ thống đối chiếu với thực tế</td></tr>
+      <tr><td><b>AI tự sửa job, tự chạy, tự cấp quyền, tự xuất bản báo cáo</b></td><td>Job sai chạy trên dữ liệu thật là sự cố thật. Quy trình <i>đề xuất → người duyệt → áp dụng</i> đã có sẵn trên SQLWF và được giữ nguyên</td></tr>
+    </table>
+  </div>
+  
+</section>
+
+</main>
+</div>
+
+<script>
+/* ==================== DATA ==================== */
+const ROLES = {
+  'nen':  {label:'Nền móng — khai một lần lúc thiết lập', color:'var(--r-nen)'},
+  'tt':   {label:'Trung tâm — dùng hằng ngày',            color:'var(--r-tt)'},
+  'khai': {label:'Khai khi phát sinh',                    color:'var(--r-khai)'},
+  'cho':  {label:'Hàng chờ việc — hệ thống đẩy việc tới', color:'var(--r-cho)'},
+  'xem':  {label:'Chỉ xem — đọc số liệu tổng hợp',        color:'var(--r-xem)'},
+};
+
+const MODULES = [
+{ id:'m1', num:'①', en:'DATA CATALOG', vn:'Danh mục dữ liệu', color:'var(--m1)', menus:[
+  { code:'1.1', name:'Bảng dữ liệu', role:'tt', phase:'GĐ2',
+    ai:['Máy soạn mô tả nghiệp vụ từ câu lệnh job sinh ra bảng; đầu mối duyệt từng mô tả','Mô tả do máy đề xuất hiển thị khác mô tả đã duyệt','Thêm trường vai trò cột: chiều phân tích / chỉ số đo lường / trục thời gian / khóa liên kết — thu thập tự động, không khai tay'],
+    purpose:'Danh mục tập trung toàn bộ bảng dữ liệu thuộc phạm vi quản trị (bảng Hive/HDFS, bảng DB nghiệp vụ). Bảng phải được khai báo tại đây trước khi có thể gán luật chất lượng, cấp quyền truy cập hoặc xuất hiện trên sơ đồ lineage — đây là menu mà 5 module còn lại tham chiếu mã bảng, mã cột.',
+    declares:['Tên bảng, mô tả nghiệp vụ, hệ thống lưu trữ, miền dữ liệu','Mức quan trọng (Tier) — quyết định mức ràng buộc metadata và hạn xử lý sự cố','Đầu mối: người sở hữu dữ liệu (Data Owner), đầu mối nghiệp vụ, đầu mối kỹ thuật','Tần suất cập nhật, giờ dữ liệu sẵn sàng','Danh sách cột: kiểu dữ liệu, độ dài, cho phép rỗng, khóa, tập giá trị hợp lệ, thuật ngữ, nhãn nhạy cảm'],
+    tabs:[
+      ['Tổng quan','Thông tin định danh, đầu mối, độ tươi dữ liệu, số dòng, dung lượng'],
+      ['Cột','Danh sách cột + thuật ngữ + nhãn nhạy cảm + chỉ số profiling do hệ thống quét: tỷ lệ rỗng, số giá trị phân biệt, phân bố giá trị'],
+      ['Chất lượng','Luật đang chạy trên bảng, kết quả và xu hướng — số liệu từ 3.2'],
+      ['Nguồn gốc','Bảng này lấy dữ liệu từ đâu, chảy đi đâu; phân tích ảnh hưởng — quan hệ sinh từ 4.1 và 2.3'],
+      ['Quyền','Ai đọc được bảng, cột nào bị che — chính sách từ 5.2'],
+      ['Lịch sử','Thay đổi metadata: giá trị cũ → mới, người sửa, thời điểm'],
+    ],
+    inputs:[['1.2','hệ thống lưu trữ'],['1.4','miền dữ liệu'],['5.1','danh sách đầu mối theo vai trò'],['8.2','định nghĩa Tier, chuẩn đặt tên']],
+    outputs:[['3.2','đối tượng gán luật chất lượng'],['4.1','bảng đích của job (bắt buộc chọn từ danh mục)'],['5.2','phạm vi chính sách truy cập'],['2.3','nút trên sơ đồ lineage'],['1.3','bảng nguồn của báo cáo'],['6.2','đối tượng áp quy tắc vòng đời']],
+    bda:[['GĐ2 FR-01','Quản lý danh mục dữ liệu — thêm/sửa/ngừng sử dụng, liên kết đối tượng'],['GĐ2 FR-02','Quản lý metadata theo bộ chuẩn, theo dõi mức độ đầy đủ'],['GĐ2 §5.2','Bộ trường thông tin bảng và cột'],['GĐ2 §7','Nạp từ file Excel/CSV để khởi tạo hàng loạt']],
+    extra:'Trên màn danh sách: nút Tạo nhóm bảng (chọn nhiều bảng gom thành nhóm để cấp quyền một lần), nút Nạp từ file, Xuất dữ liệu.' },
+  { code:'1.2', name:'Hệ thống & Nguồn dữ liệu', role:'nen', phase:'GĐ2',
+    purpose:'Danh mục các hệ thống tạo ra hoặc lưu trữ dữ liệu (hệ thống sản phẩm, DB nguồn, kho dữ liệu, Data Lake) và các kênh trao đổi dữ liệu giữa hệ thống. Khai một lần lúc thiết lập; mọi bảng ở 1.1 bắt buộc trỏ về một hệ thống tại đây.',
+    declares:['Hệ thống: tên + mục đích sử dụng, loại (DB quan hệ / DWH / Data Lake), đơn vị quản lý, đầu mối kỹ thuật, môi trường (production/test), trạng thái sử dụng','Kênh trao đổi: loại kết nối (API / Kafka / SFTP), hệ thống gửi — hệ thống nhận, dữ liệu và định dạng trao đổi, tần suất, phương thức xác thực, người phụ trách'],
+    tabs:[
+      ['Hệ thống','Danh sách và chi tiết từng hệ thống; các bảng, kênh liên quan'],
+      ['Kênh trao đổi','Đường dữ liệu giữa hai hệ thống — quản lý cả chiều nhận về và chiều gửi ra ngoài; chiều gửi đi phải khai kèm mục đích và căn cứ chia sẻ (liên kết 6.2)'],
+    ],
+    inputs:[['5.1','người sở hữu, đầu mối kỹ thuật']],
+    outputs:[['1.1','trường Hệ thống khi khai bảng'],['2.3','điểm đầu chuỗi truy vết'],['4.2','kênh nguồn của cửa nạp']],
+    bda:[['GĐ2 §5.1','Bộ trường hệ thống và nơi lưu trữ'],['GĐ2 §5.4','Bộ trường kênh trao đổi dữ liệu (API, Kafka, FTP)']] },
+  { code:'1.3', name:'Báo cáo & Chỉ tiêu', role:'khai', phase:'GĐ2',
+    ai:['Cấp ra bộ dữ liệu đã kiểm chứng kèm lớp ngữ nghĩa: vai trò cột, đơn vị đo, định nghĩa chỉ tiêu, nhãn nhạy cảm','Tableau / VDSD kéo bộ này vào dựng biểu đồ — DMP không dựng báo cáo'],
+    purpose:'Quản lý báo cáo và chỉ tiêu như thực thể có cấu trúc. Báo cáo = sản phẩm đầu ra cho đơn vị sử dụng (file, màn hình BI hoặc bảng dữ liệu); Chỉ tiêu = đại lượng nghiệp vụ có định nghĩa và công thức, thuộc báo cáo và trỏ về bảng/cột nguồn. Đây là mắt xích cuối của chuỗi lineage: có thực thể này thì khi một bảng lỗi, hệ thống chỉ ra được báo cáo nào đọc phải số sai và ai cần được báo.',
+    declares:['Báo cáo: tên, mô tả, mục đích, đơn vị sở hữu, người phụ trách, hình thức đầu ra (màn hình / bảng / file), đối tượng sử dụng, tần suất cập nhật + giờ cam kết dữ liệu sẵn sàng','Chỉ tiêu: định nghĩa, công thức tính, điều kiện lấy dữ liệu, quy tắc tổng hợp, bảng/cột nguồn'],
+    tabs:[['Báo cáo','Danh sách báo cáo và thông tin cấu thành'],['Chỉ tiêu','Danh sách chỉ tiêu — một báo cáo gồm nhiều chỉ tiêu']],
+    inputs:[['1.1','bảng nguồn và bảng output'],['2.1','thuật ngữ chuẩn cho định nghĩa chỉ tiêu']],
+    outputs:[['2.3','đích cuối của chuỗi truy vết và phân tích ảnh hưởng'],['3.2','đối tượng áp luật chất lượng (báo cáo, chỉ tiêu)']],
+    bda:[['GĐ2 §5.5','8 nhóm trường thông tin nghiệp vụ báo cáo, chỉ tiêu'],['GĐ2 FR-06','Truy vết đến mức nghiệp vụ (chỉ tiêu ← bảng ← nguồn)'],['GĐ2 §10','Chỉ số nghiệm thu: tỷ lệ báo cáo/chỉ tiêu truy vết được đến nguồn']],
+    open:'Cần chốt với BDA mức chi tiết quản lý: đến báo cáo, đến sheet (một báo cáo Excel nhiều sheet, mỗi sheet từ một bảng output), hay đến từng bảng output. Xem trang Đối chiếu & điểm mở, mục 1.' },
+  { code:'1.4', name:'Miền dữ liệu', role:'nen', phase:'GĐ2',
+    purpose:'Phân nhóm bảng theo miền nghiệp vụ (Kinh doanh, Tài chính, Khách hàng, Vận hành…) theo cây phân cấp; mỗi miền có người chịu trách nhiệm. Miền không chỉ là metadata mô tả — nó là phạm vi cấp quyền theo nhóm (cấp cho cả một đơn vị quyền đọc một miền thay vì từng bảng) và là chiều thống kê trên màn Sức khỏe dữ liệu.',
+    declares:['Cây miền nhiều cấp','Người chịu trách nhiệm từng miền','Mô tả phạm vi nghiệp vụ của miền'],
+    tabs:[],
+    inputs:[['5.1','người chịu trách nhiệm miền']],
+    outputs:[['1.1','trường Miền khi khai bảng'],['5.2','phạm vi chính sách truy cập theo miền'],['6.1','phạm vi áp dụng chính sách'],['8.1','chiều thống kê Theo miền']],
+    bda:[['GĐ2 FR-01','Gắn nhóm lĩnh vực dữ liệu cho từng đối tượng'],['GĐ2 §5','Trường "nhóm lĩnh vực dữ liệu" bắt buộc trên mọi đối tượng']] },
+  { code:'1.5', name:'Danh mục tham chiếu', role:'nen', phase:'GĐ2',
+    purpose:'Quản lý các bảng mã dùng chung toàn đơn vị (tỉnh/thành, loại hợp đồng, mã đối tác, nhóm cước): định nghĩa cấu trúc trường cho từng danh mục, dữ liệu bản ghi, quy trình phê duyệt thay đổi và quản lý phiên bản. Bảo đảm mọi nơi dùng cùng một bộ giá trị.',
+    declares:['Định nghĩa danh mục: các trường, kiểu dữ liệu, bắt buộc/tùy chọn','Bản ghi dữ liệu của danh mục','Thay đổi chờ phê duyệt trước khi có hiệu lực'],
+    tabs:[['Dữ liệu','Bản ghi trong danh mục'],['Định nghĩa trường','Cấu trúc trường của danh mục'],['Phiên bản','Lịch sử thay đổi, so sánh hai phiên bản'],['Chờ duyệt','Bản ghi mới chờ phê duyệt'],['Nhật ký','Ai sửa gì, lúc nào']],
+    inputs:[],
+    outputs:[['1.1','tập giá trị hợp lệ của cột'],['3.2','luật kiểm "giá trị tồn tại trong danh mục"']],
+    bda:[['GĐ2 §5.2','Tập giá trị hợp lệ và quy tắc nghiệp vụ của cột'],['GĐ3 §3','Chiều Hợp lệ (Validity) — giá trị trong tập cho phép']],
+    open:'Nghiệp vụ tương đồng tính năng Quản lý danh mục trên SQLWF (template schema động MongoDB → phê duyệt → đồng bộ HDFS). Phương án hợp nhất cần rà soát source SQLWF — xem trang Đối chiếu & điểm mở, mục 2.' },
+]},
+{ id:'m2', num:'②', en:'GOVERNANCE', vn:'Quản trị — ngữ nghĩa, phân loại, lineage, phê duyệt', color:'var(--m2)', menus:[
+  { code:'2.1', name:'Từ điển nghiệp vụ (Business Glossary)', role:'khai', phase:'GĐ2',
+    purpose:'Chuẩn hóa thuật ngữ nghiệp vụ: mỗi khái niệm có một định nghĩa chính thức, công thức tính (nếu có), các tên gọi khác, phạm vi áp dụng và trạng thái phê duyệt. Thuật ngữ được gắn trực tiếp vào cột dữ liệu — tìm theo khái niệm nghiệp vụ sẽ ra đúng cột kỹ thuật, bất kể cột đặt tên gì.',
+    declares:['Thuật ngữ, định nghĩa, công thức, bí danh (alias)','Đơn vị sở hữu, người phụ trách (steward), trạng thái phê duyệt','Cờ CDE (Critical Data Element) — dữ liệu trọng yếu: cột mang cờ này bắt buộc có luật chất lượng','Liên kết thuật ngữ ↔ cột, báo cáo, chỉ tiêu'],
+    tabs:[],
+    inputs:[['5.1','chủ sở hữu, người phụ trách, người duyệt']],
+    outputs:[['1.1','trường Thuật ngữ trên tab Cột'],['3.2','cờ CDE bắt buộc cột có luật'],['1.3','định nghĩa chuẩn cho chỉ tiêu']],
+    bda:[['GĐ2 FR-03','Business Glossary — thuật ngữ, định nghĩa, công thức, liên kết, phê duyệt'],['GĐ2 §5.6','Bộ trường thuật ngữ nghiệp vụ']] },
+  { code:'2.2', name:'Phân loại & Nhãn', role:'khai', phase:'GĐ4',
+    purpose:'Quản lý hai trục phân loại độc lập: (1) Mức phân loại bảo mật 4 cấp — Công khai / Nội bộ / Mật / Hạn chế truy cập — gán cho bảng và báo cáo, dùng viết chính sách hạn chế tải xuống; (2) Nhãn dữ liệu nhạy cảm — số điện thoại, CCCD, số tài khoản… — gán cho cột, dùng viết chính sách che dữ liệu. Hệ thống quét gợi ý nhãn theo tên cột và mẫu giá trị, người phụ trách xác nhận.',
+    declares:['Cây nhãn dữ liệu nhạy cảm và tiêu chí nhận diện','Mức phân loại bảo mật của bảng, báo cáo','Xác nhận / từ chối nhãn hệ thống gợi ý cho cột'],
+    tabs:[['Mức phân loại','4 cấp gán cho bảng, báo cáo — nguồn của chính sách hạn chế tải xuống'],['Nhãn nhạy cảm','Nhãn gán cho cột — nguồn của chính sách che dữ liệu']],
+    inputs:[['1.1','bảng và cột để gắn nhãn']],
+    outputs:[['5.2','chính sách che theo nhãn — áp tự động cho mọi cột mang nhãn'],['6.1','phạm vi áp dụng chính sách']],
+    bda:[['GĐ4 FR-01','Phân loại 4 mức: Công khai, Nội bộ, Mật, Hạn chế truy cập'],['GĐ4 FR-02','Nhận diện tự động + xác nhận thủ công dữ liệu cá nhân/nhạy cảm ở mức bảng/cột'],['GĐ4 §5.1','Bộ trường phân loại và nhãn nhạy cảm']] },
+  { code:'2.3', name:'Truy vết luồng dữ liệu (Data Lineage)', role:'xem', phase:'GĐ2',
+    purpose:'Sơ đồ luồng dữ liệu toàn hệ thống ở các mức: hệ thống, bảng, cột và nghiệp vụ (chỉ tiêu). Phần lớn quan hệ được thu tự động bằng phân tích câu SQL của job (4.1); quan hệ không thu tự động được — ví dụ báo cáo dựng trên công cụ BI — thì khai báo thủ công và đi qua phê duyệt. Kèm chức năng phân tích ảnh hưởng: chọn một bảng/cột, hệ thống liệt kê bảng đích, báo cáo, chỉ tiêu, người dùng bị ảnh hưởng nếu thay đổi.',
+    declares:['Quan hệ khai báo thủ công: đối tượng nguồn, đối tượng đích, job trung gian, bước biến đổi, mức truy vết, lịch chạy liên quan'],
+    tabs:[['Bản đồ luồng dữ liệu','Sơ đồ toàn cảnh: kênh → bảng thô → job → bảng nghiệp vụ → báo cáo; lọc theo hệ thống/miền'],['Quan hệ đã khai báo','Danh sách quan hệ khai thủ công, có trạng thái phê duyệt'],['Phân tích ảnh hưởng','Chọn đối tượng → danh sách mọi thứ bị ảnh hưởng, xuất được']],
+    inputs:[['4.1','quan hệ tự sinh từ câu SQL của job'],['4.2','quan hệ từ cửa nạp'],['1.3','đích nghiệp vụ: báo cáo, chỉ tiêu']],
+    outputs:[['1.1','tab Nguồn gốc của từng bảng'],['8.1','chỉ số độ phủ truy vết']],
+    bda:[['GĐ2 FR-06','Lineage đa mức, thu tự động + khai thủ công, phân tích ảnh hưởng'],['GĐ2 §5.7','Bộ trường quan hệ luồng dữ liệu'],['GĐ2 §8','Quy trình phê duyệt áp cho lineage khai thủ công']] },
+  { code:'2.4', name:'Phê duyệt & Phiên bản', role:'cho', phase:'Nền tảng',
+    purpose:'Hàng chờ phê duyệt dùng chung cho mọi loại hồ sơ metadata (bảng, thuật ngữ, danh mục, chính sách, lineage khai thủ công). Người duyệt mở một màn thấy toàn bộ hồ sơ chờ mình, xem thay đổi cụ thể (giá trị cũ — mới), duyệt hoặc trả về kèm lý do. Mọi thông tin đi theo vòng trạng thái thống nhất: Dự thảo → Chờ phê duyệt → (Yêu cầu chỉnh sửa) → Đã phê duyệt → Ngừng sử dụng.',
+    declares:['Quyết định duyệt / yêu cầu chỉnh sửa / từ chối, kèm lý do'],
+    tabs:[['Chờ tôi duyệt','Hồ sơ hệ thống định tuyến đến người duyệt hiện tại'],['Đã duyệt','Hồ sơ đã xử lý'],['Lịch sử phiên bản','So sánh hai phiên bản của một đối tượng, tra ai duyệt thay đổi nào']],
+    inputs:[['5.1','ai có quyền duyệt loại hồ sơ nào'],['1.1','hồ sơ từ mọi menu khai báo']],
+    outputs:[['1.1','trạng thái hiệu lực của metadata trên toàn hệ thống']],
+    bda:[['GĐ2 FR-05','Quản lý thay đổi và phê duyệt — lưu trước/sau, người, thời gian'],['GĐ2 §8, §8.1','Quy trình và 5 trạng thái của thông tin']] },
+]},
+{ id:'m3', num:'③', en:'DATA QUALITY', vn:'Chất lượng dữ liệu', color:'var(--m3)', menus:[
+  { code:'3.1', name:'Thư viện luật', role:'nen', phase:'GĐ3',
+    purpose:'Kho mẫu luật kiểm tra dùng chung, phân theo 6 chiều chất lượng: Đầy đủ, Hợp lệ, Nhất quán, Không trùng lặp, Chính xác, Kịp thời. Mỗi mẫu định nghĩa một lần (mã kiểm tra, tham số cần khai, ngưỡng mặc định) rồi được gán cho nhiều bảng/cột ở 3.2 với tham số riêng từng lần gán.',
+    declares:['Mẫu luật: tên, chiều chất lượng, mô tả, tham số, ngưỡng mặc định','Trạng thái sử dụng và thống kê mẫu nào đang được gán nhiều'],
+    tabs:[],
+    inputs:[],
+    outputs:[['3.2','danh sách mẫu khi gán luật'],['4.2','mẫu luật cho cổng chất lượng tại cửa nạp']],
+    bda:[['GĐ3 FR-01','Định nghĩa quy tắc kiểm tra theo 6 tiêu chí'],['GĐ3 §3','6 chiều chất lượng dữ liệu']] },
+  { code:'3.2', name:'Luật & Kết quả', role:'khai', phase:'GĐ3',
+    ai:['Ngưỡng cảnh báo tự thiết lập từ 30 ngày lịch sử thay vì khai tay — thống kê thuần, không dùng AI','Khai luật nghiệp vụ bằng câu tiếng Việt; hệ thống sinh luật có cấu trúc để người xác nhận trước khi lưu'],
+    purpose:'Gán luật từ thư viện cho đối tượng cụ thể (bảng, cột, báo cáo, chỉ tiêu, dữ liệu chủ), đặt ngưỡng, chọn cách kích hoạt và hành động khi vi phạm. Sau khi khai, hệ thống tự chạy — theo lịch, theo sự kiện (ngay sau khi job ghi xong bảng đích) hoặc thủ công — tự chấm điểm chất lượng và tự sinh việc khi vi phạm. Kèm dashboard kết quả toàn hệ thống.',
+    declares:['Lần gán luật: đối tượng, tham số, ngưỡng (4 cấp ưu tiên: lần gán → Tier bảng → mặc định mẫu → tham số toàn cục)','Kích hoạt: theo lịch / theo sự kiện / thủ công','Hành động khi vi phạm: gửi cảnh báo, tạo phiếu sự cố, tạo phiếu Jira, chặn job hạ nguồn, giữ lô ở vùng chờ'],
+    tabs:[['Bảng điều khiển','Tỷ lệ đạt, số vi phạm, bảng chưa có luật nào'],['Gán luật','Danh sách lần gán và tham số'],['Theo chiều chất lượng','Kết quả nhóm theo 6 chiều']],
+    inputs:[['1.1','bảng và cột'],['3.1','mẫu luật'],['2.1','cờ CDE — cột trọng yếu bắt buộc có luật'],['1.5','danh mục để kiểm giá trị hợp lệ']],
+    outputs:[['1.1','điểm chất lượng trên tab Chất lượng'],['3.3','phiếu sự cố khi vi phạm'],['8.1','chỉ số chất lượng toàn hệ thống']],
+    bda:[['GĐ3 FR-01','Quy tắc gắn đối tượng, điều kiện, mức nghiêm trọng'],['GĐ3 FR-02','Chạy theo lịch, theo sự kiện, thủ công; lưu kết quả và dữ liệu lỗi'],['GĐ3 §5.1, §5.2','Bộ trường quy tắc và kết quả kiểm tra']] },
+  { code:'3.3', name:'Sự cố chất lượng', role:'cho', phase:'GĐ3',
+    purpose:'Phiếu xử lý lỗi tự sinh khi luật vi phạm: hệ thống tự gán đầu mối phụ trách bảng, đặt hạn xử lý theo Tier, gửi thông báo qua kênh khai ở 3.4. Vòng trạng thái: Mới → Đã gán → Đang xử lý → Chờ kiểm tra lại (hệ thống chạy lại luật để xác nhận hết lỗi; chưa đạt thì quay về xử lý) → Chờ duyệt đóng → Đã đóng. Người xử lý không tự đóng phiếu của mình; lý do đóng bắt buộc chọn — thống kê được tỷ lệ cảnh báo sai.',
+    declares:['Cập nhật phiếu: nhận việc, nguyên nhân, cách khắc phục, yêu cầu kiểm tra lại, lý do đóng'],
+    tabs:[['Đang mở','Toàn bộ phiếu chưa đóng'],['Tôi xử lý','Phiếu gán cho người dùng hiện tại'],['Chờ tôi duyệt','Phiếu chờ xác nhận đóng'],['Đã đóng','Lịch sử phiếu, thời gian xử lý']],
+    inputs:[['3.2','vi phạm luật sinh phiếu'],['4.2','lô bị chặn tại cửa nạp'],['1.1','đầu mối để tự gán việc']],
+    outputs:[['8.1','chỉ số sự cố mở, thời gian xử lý, tỷ lệ cảnh báo sai']],
+    bda:[['GĐ3 FR-03','Cảnh báo và phân công xử lý — tự tạo phiếu, người phụ trách, hạn'],['GĐ3 FR-04','Theo dõi trạng thái, kiểm tra lại trước khi đóng, lưu lịch sử'],['GĐ3 §5.3, §6','Bộ trường phiếu và quy trình xử lý lỗi']] },
+  { code:'3.4', name:'Cảnh báo', role:'khai', phase:'GĐ3',
+    ai:['Người dùng cuối tự đăng ký theo dõi bảng hoặc báo cáo','Cảnh báo viết theo ngôn ngữ nghiệp vụ, không dùng thuật ngữ kỹ thuật','Gộp theo nguyên nhân gốc thay vì gửi rời rạc','Gửi lại đúng thời điểm người dùng thường mở số liệu'],
+    purpose:'Cấu hình quy tắc gửi thông báo và kênh gửi dùng chung. Người nhận khai theo vai trò ("đầu mối kỹ thuật của bảng") thay vì tên cá nhân — đổi người phụ trách ở 1.1 thì thông báo tự chuyển đúng người. Chế độ gửi: ngay, gom lô, tổng hợp ngày/tuần.',
+    declares:['Quy tắc: điều kiện gửi, người nhận theo vai trò, chế độ gửi','Kênh: email, Telegram, SMS, tạo phiếu công việc; gửi thử; theo dõi kênh lỗi'],
+    tabs:[['Quy tắc cảnh báo','Điều kiện → người nhận → chế độ gửi'],['Kênh gửi','Cấu hình kênh dùng chung cho 3.2, 3.3, 4.1'],['Lịch sử gửi','Kết quả từng lần gửi']],
+    inputs:[['1.1','đầu mối theo bảng'],['1.4','đầu mối theo miền'],['5.1','nhóm người nhận']],
+    outputs:[['3.2','kênh hành động khi luật vi phạm'],['3.3','thông báo phiếu sự cố'],['4.1','thông báo job lỗi / trễ giờ cam kết']],
+    bda:[['GĐ3 FR-03','Gửi cảnh báo khi phát hiện dữ liệu không đạt'],['Phương án §6','Thông báo email/tin nhắn/công cụ nội bộ; tích hợp công cụ quản lý công việc']] },
+]},
+{ id:'m4', num:'④', en:'INGESTION & ORCHESTRATION', vn:'Nạp và điều phối dữ liệu', color:'var(--m4)', menus:[
+  { code:'4.1', name:'Luồng xử lý (Job)', role:'khai', phase:'GĐ2',
+    ai:['Đẩy metadata sang trình soạn SQL: tra cứu bảng tại chỗ, cảnh báo khi dùng bảng đã ngừng nạp','Quan hệ luồng dữ liệu và vai trò cột thu thập từ chính câu lệnh của job'],
+    purpose:'Quản lý job ETL: chuỗi bước SQL có phụ thuộc, bảng đích, lịch chạy và giờ cam kết dữ liệu sẵn sàng (SLA). Hai ràng buộc quan trọng: bảng đích bắt buộc chọn từ danh mục 1.1 (bảo đảm mọi bảng sinh ra đều có người phụ trách) và cơ chế quét lineage từ câu SQL mặc định bật (job đọc bảng nào, ghi bảng nào — hệ thống tự nối thành quan hệ luồng dữ liệu).',
+    declares:['Job: tên, mục đích, bảng đích, lịch chạy, giờ cam kết, người phụ trách','Các bước SQL và quan hệ phụ thuộc giữa bước','Cấu hình quét lineage, kênh thông báo khi lỗi'],
+    tabs:[['Bước xử lý','Sơ đồ phụ thuộc giữa các bước, câu SQL từng bước'],['Lần chạy & Lịch','Lịch sử chạy, thời gian từng bước, kết quả chất lượng sau chạy'],['Phiên bản','Lịch sử phiên bản, so sánh']],
+    inputs:[['1.1','bảng đích — chọn từ danh mục, không nhập tự do'],['3.4','kênh thông báo']],
+    outputs:[['2.3','quan hệ lineage tự sinh từ SQL'],['3.2','kích hoạt luật theo sự kiện sau khi ghi xong'],['4.3','trạng thái trên sơ đồ pipeline']],
+    bda:[['GĐ2 §5.3','Bộ trường job và tiến trình xử lý: mục đích, công cụ, lịch, đầu vào/ra, người phụ trách, trạng thái chạy'],['GĐ2 FR-06','Nguồn thu tự động của lineage']] },
+  { code:'4.2', name:'Cửa nạp dữ liệu', role:'khai', phase:'GĐ2',
+    purpose:'Quản lý tập trung các đường dữ liệu đi vào hệ thống: upload file, SFTP, API, Kafka, đồng bộ DB. Mỗi đường nạp có mẫu khai báo (cấu trúc file, ánh xạ trường, bảng đích) và cổng chất lượng — luật kiểm chạy trên dữ liệu ở vùng chờ trước khi ghi vào bảng, với 3 mức xử lý khi không đạt: chặn cả lô / tách dòng lỗi / chỉ cảnh báo.',
+    declares:['Mẫu nạp: nguồn, định dạng, ánh xạ trường, bảng đích, lịch','Luật kiểm tại cửa và mức xử lý','Xử lý lô ở vùng chờ: cho qua kèm lý do, ghi phần đúng, nạp lại file sửa, hủy lô'],
+    tabs:[['Mẫu nạp','Khai báo đường nạp và cấu trúc'],['Lịch sử nạp','Các lần nạp, kết quả kiểm tại cửa'],['Cổng chất lượng','Luật gắn với từng mẫu nạp'],['Vùng chờ','Lô không đạt đang chờ xử lý']],
+    inputs:[['1.2','kênh trao đổi nguồn'],['1.1','bảng đích'],['3.1','mẫu luật cho cổng chất lượng'],['8.2','kết nối nguồn']],
+    outputs:[['1.1','dữ liệu vào bảng, cập nhật độ tươi'],['3.3','sự cố khi lô bị chặn'],['2.3','quan hệ kênh → bảng trên lineage']],
+    bda:[['GĐ2 §5.4','Kênh trao đổi và phương thức nhận dữ liệu'],['GĐ3 FR-02','Kiểm tra khi dữ liệu được cập nhật (theo sự kiện)'],['GĐ3 §1','Phát hiện sớm lỗi — kiểm trước khi ghi']],
+    open:'Nghiệp vụ tương đồng tính năng Quản lý upload trên SQLWF (upload file → HDFS append → job đồng bộ cuối ngày). Phương án hợp nhất cần rà soát source SQLWF — xem trang Đối chiếu & điểm mở, mục 2.' },
+  { code:'4.3', name:'Theo dõi & Pipeline', role:'xem', phase:'GĐ3',
+    purpose:'Màn giám sát vận hành: tác vụ nào đang chạy, hỏng ở bước nào, và sơ đồ pipeline từ cửa nạp → job → bảng → báo cáo có phủ trạng thái chất lượng lên từng nút. Nhờ đó phát hiện được tình huống job chạy thành công nhưng dữ liệu không đạt chất lượng — hai trạng thái hiển thị trên cùng một sơ đồ.',
+    declares:[],
+    tabs:[['Sơ đồ','Pipeline toàn cảnh phủ trạng thái chạy + trạng thái chất lượng'],['Danh sách tác vụ','Kết quả lần chạy gần nhất của từng job'],['Đang hỏng','Nhánh lỗi và đối tượng hạ nguồn bị ảnh hưởng']],
+    inputs:[['4.1','trạng thái job'],['4.2','trạng thái cửa nạp'],['3.2','kết quả chất lượng']],
+    outputs:[['8.1','chỉ số vận hành']],
+    bda:[['GĐ2 §5.3','Trạng thái chạy của job — trường thông tin vận hành'],['GĐ3 FR-05','Theo dõi tổng hợp phục vụ quản lý']] },
+]},
+{ id:'m5', num:'⑤', en:'DATA SECURITY', vn:'Bảo mật dữ liệu', color:'var(--m5)', menus:[
+  { code:'5.1', name:'Người dùng & Nhóm', role:'nen', phase:'Nền tảng',
+    purpose:'Quản lý tài khoản (đồng bộ từ hệ thống tài khoản tập trung), nhóm, và gán 5 vai trò chuẩn: Người sở hữu dữ liệu (phê duyệt), Đầu mối nghiệp vụ (cập nhật ý nghĩa), Đầu mối kỹ thuật (cập nhật cấu trúc, job), Đơn vị vận hành (quản người dùng, thu hồi quyền), Người sử dụng (tra cứu, xin quyền). Menu này quyết định quyền vào menu; quyền đọc dữ liệu (dòng, cột) do 5.2 quyết định — hai lớp tách biệt.',
+    declares:['Tài khoản, nhóm, gán vai trò','Ma trận quyền truy cập menu theo nhóm'],
+    tabs:[['Người dùng','Tài khoản và vai trò'],['Nhóm','Nhóm và thành viên'],['Vai trò','5 vai trò và trách nhiệm'],['Quyền menu','Ma trận nhóm × menu']],
+    inputs:[],
+    outputs:[['1.1','mọi trường chọn người trên hệ thống — tự lọc theo vai trò'],['2.4','ai có quyền duyệt'],['5.2','chủ thể của chính sách']],
+    bda:[['GĐ1 §2.3','Mô hình 5 vai trò và trách nhiệm'],['Phương án §6','Quản lý người dùng, đơn vị, vai trò, nhóm quyền; đăng nhập tập trung']] },
+  { code:'5.2', name:'Chính sách truy cập', role:'khai', phase:'GĐ4',
+    purpose:'Kiểm soát quyền trên dữ liệu: ai được xem/ghi phạm vi nào (bảng, nhóm bảng, miền), cột nhạy cảm hiển thị thế nào với từng nhóm (che một phần, băm, trả rỗng — 8 kiểu che), mỗi người chỉ thấy dòng thuộc phạm vi của mình (lọc theo dòng), và hạn chế tải xuống theo mức phân loại. Chính sách viết theo nhãn áp tự động cho mọi cột mang nhãn, kể cả cột gắn nhãn sau này. Thực thi ở tầng viết lại câu truy vấn, không phải tầng giao diện.',
+    declares:['Chính sách quyền dữ liệu theo bảng / nhóm / miền','Chính sách che theo nhãn nhạy cảm','Chính sách lọc theo dòng','Chính sách hạn chế tải xuống theo mức phân loại'],
+    tabs:[['Quyền dữ liệu','Xem / ghi / xóa theo phạm vi'],['Che dữ liệu','Kiểu che theo nhãn và nhóm người dùng'],['Lọc theo dòng','Điều kiện dòng theo đơn vị/phạm vi người dùng'],['Theo nhãn','Chính sách gắn với nhãn — áp tự động'],['Báo cáo quyền','Một người đang có quyền gì, quyền không sử dụng, truy cập bất thường']],
+    inputs:[['1.1','bảng, cột, nhóm bảng'],['2.2','nhãn nhạy cảm và mức phân loại'],['5.1','người dùng, nhóm'],['5.3','yêu cầu đã duyệt sinh chính sách']],
+    outputs:[['5.4','căn cứ ghi vào nhật ký (chính sách nào quyết định)'],['6.3','bằng chứng cho đánh giá tuân thủ']],
+    bda:[['GĐ4 FR-03','Cấp quyền theo vai trò, đơn vị, lĩnh vực, mục đích, thời hạn'],['GĐ4 FR-04','Che/mã hóa, hạn chế tải xuống, theo dõi bất thường']] },
+  { code:'5.3', name:'Yêu cầu cấp quyền', role:'cho', phase:'GĐ4',
+    ai:['Đồng bộ yêu cầu từ Jira (chỉ đọc)','Hệ thống dựng bản phân tích phương án: nguồn dữ liệu, cách liên kết, cách tính, rào cản cần biết trước','BDA duyệt và sửa — hệ thống không tạo job, không chạy gì'],
+    purpose:'Quy trình xin — duyệt quyền truy cập dữ liệu có dấu vết: người xin bắt buộc ghi mục đích sử dụng và chọn thời hạn (không có tùy chọn vô thời hạn); hệ thống tự định tuyến đến người duyệt là đầu mối phụ trách dữ liệu; người duyệt có 3 mức quyết định (đồng ý toàn phần / đồng ý có giới hạn — loại trừ cột nhạy cảm hoặc rút ngắn thời hạn / từ chối kèm lý do). Quyền được nhắc trước hạn và tự thu hồi khi hết hạn.',
+    declares:['Yêu cầu: đối tượng dữ liệu, mục đích, thời hạn','Quyết định duyệt và phạm vi cấp thực tế'],
+    tabs:[['Chờ tôi duyệt','Yêu cầu định tuyến đến người duyệt hiện tại'],['Tôi đã xin','Yêu cầu của người dùng hiện tại và trạng thái'],['Sắp hết hạn','Quyền sắp hết hiệu lực — gia hạn hoặc để tự thu hồi']],
+    inputs:[['5.1','người yêu cầu'],['1.1','đối tượng dữ liệu và người duyệt tương ứng']],
+    outputs:[['5.2','chính sách sinh ra kèm mã yêu cầu — truy được lý do cấp'],['5.4','ghi nhận cấp / thu hồi']],
+    bda:[['GĐ4 FR-03','Gửi yêu cầu kèm mục đích, thời hạn; phê duyệt trước khi cấp; tự thu hồi khi hết hạn'],['GĐ4 §5.2, §6','Bộ trường yêu cầu quyền và 4 trạng thái']] },
+  { code:'5.4', name:'Nhật ký kiểm toán', role:'xem', phase:'GĐ4',
+    purpose:'Nhật ký truy cập dữ liệu do hệ thống tự ghi, không chỉnh sửa được: ai, dữ liệu nào, thời điểm, hành động (xem, sửa, tải xuống, chia sẻ), và chính sách nào quyết định cho phép hay chặn. Lọc được riêng truy cập cột nhạy cảm và các lượt xuất dữ liệu vượt ngưỡng bất thường.',
+    declares:[],
+    tabs:[['Tất cả','Toàn bộ sự kiện truy cập'],['Truy vấn','Truy cập dữ liệu qua cổng truy vấn'],['Xuất dữ liệu','Các lượt tải xuống, cảnh báo vượt ngưỡng'],['Thay đổi quyền','Lịch sử cấp / thu hồi quyền']],
+    inputs:[['5.2','chính sách áp cho từng sự kiện']],
+    outputs:[['6.3','bằng chứng cho kỳ đánh giá tuân thủ'],['8.1','chỉ số truy cập bất thường']],
+    bda:[['GĐ4 FR-06','Nhật ký: ai truy cập, dữ liệu nào, thời điểm, hành động'],['GĐ4 §5.4','Bộ trường nhật ký và bằng chứng tuân thủ']] },
+]},
+{ id:'m6', num:'⑥', en:'POLICY & COMPLIANCE', vn:'Chính sách và tuân thủ', color:'var(--m6)', menus:[
+  { code:'6.1', name:'Chính sách dữ liệu', role:'khai', phase:'GĐ4',
+    purpose:'Số hóa các quy định về dữ liệu (nghị định bảo vệ dữ liệu cá nhân, quy chế nội bộ, quyết định phân cấp): nội dung, số hiệu văn bản, đơn vị ban hành, ngày hiệu lực, phiên bản, phạm vi áp dụng (chọn theo miền / nhãn / mức phân loại — hệ thống tự tính quy định áp cho bao nhiêu bảng, cột) và các yêu cầu kiểm soát đo được. Phân biệt với 5.2: 6.1 là quy định; 5.2 là cấu hình kỹ thuật thực thi; 6.3 đối chiếu hai bên.',
+    declares:['Chính sách: nội dung, số hiệu, đơn vị ban hành, hiệu lực, phiên bản','Phạm vi áp dụng theo miền / nhãn / mức phân loại','Yêu cầu kiểm soát đo được — thành mục kiểm ở 6.3'],
+    tabs:[],
+    inputs:[['2.2','nhãn và mức phân loại làm phạm vi'],['1.4','miền làm phạm vi']],
+    outputs:[['6.3','mỗi yêu cầu kiểm soát thành một mục kiểm'],['6.2','căn cứ đặt thời hạn vòng đời']],
+    bda:[['GĐ4 FR-05','Danh mục chính sách: nội dung, phạm vi, hiệu lực, đơn vị ban hành'],['GĐ4 §5.3','Bộ trường chính sách quản trị dữ liệu']] },
+  { code:'6.2', name:'Vòng đời & Lưu trữ', role:'cho', phase:'GĐ4',
+    purpose:'Quy tắc vòng đời cho từng nhóm dữ liệu: thời gian sử dụng, thời gian lưu trữ, thời điểm chuyển lưu kho (archive), điều kiện xóa và người phê duyệt xóa — mỗi quy tắc trỏ về căn cứ ở 6.1. Hệ thống không tự xóa dữ liệu: đến hạn thì đưa vào hàng chờ, người có thẩm quyền duyệt mới thực thi. Kèm quản lý chia sẻ dữ liệu cho bên thứ ba: bên nhận, mục đích, phạm vi, thời hạn, căn cứ — hết hạn tự ngắt kênh gửi.',
+    declares:['Quy tắc vòng đời theo nhóm dữ liệu, căn cứ chính sách','Hồ sơ chia sẻ bên thứ ba: bên nhận, mục đích, phạm vi, thời hạn'],
+    tabs:[['Vòng đời','Quy tắc sử dụng — lưu trữ — xóa'],['Đến hạn xử lý','Hàng chờ dữ liệu đến hạn, chờ người có thẩm quyền duyệt'],['Chia sẻ bên thứ ba','Danh mục dữ liệu gửi ra ngoài đơn vị và thời hạn']],
+    inputs:[['1.1','bảng áp quy tắc'],['6.1','căn cứ pháp lý / quy chế']],
+    outputs:[['1.2','ngắt kênh gửi khi hết hạn chia sẻ'],['5.4','ghi nhật ký thao tác xóa / chia sẻ'],['8.1','chỉ số dữ liệu quá hạn']],
+    bda:[['GĐ4 FR-05','Vòng đời: thời gian sử dụng, lưu trữ, archive, điều kiện xóa; chia sẻ bên thứ ba'],['GĐ4 §5.3','Thời gian lưu trữ, điều kiện xóa, điều kiện chia sẻ']] },
+  { code:'6.3', name:'Đánh giá tuân thủ', role:'cho', phase:'GĐ4',
+    purpose:'Chạy kỳ đánh giá tuân thủ theo danh mục kiểm; mỗi mục kiểm gắn với một yêu cầu trong quy định ở 6.1. Phần lớn mục kiểm được hệ thống chấm tự động bằng dữ liệu sẵn có (ví dụ: 100% cột nhạy cảm có chính sách che — đối chiếu 2.2 với 5.2; không còn tài khoản nghỉ việc giữ quyền — đối chiếu 5.1 với 5.2). Mục không đạt mở kế hoạch khắc phục có người phụ trách và hạn. Cuối kỳ xuất trọn bộ hồ sơ bằng chứng phục vụ kiểm toán.',
+    declares:['Kỳ đánh giá và danh mục kiểm','Kết quả chấm, phát hiện không phù hợp','Kế hoạch khắc phục: nội dung, người phụ trách, hạn'],
+    tabs:[['Kỳ đánh giá','Danh mục kiểm và kết quả chấm'],['Danh mục kiểm','Mục kiểm gắn yêu cầu chính sách, cách chấm'],['Kế hoạch khắc phục','Việc khắc phục đang mở và trạng thái']],
+    inputs:[['6.1','mục kiểm từ yêu cầu kiểm soát'],['5.2','số liệu chấm tự động'],['5.4','bằng chứng truy cập'],['2.2','độ phủ phân loại'],['3.2','kết quả chất lượng']],
+    outputs:[['8.1','điểm tuân thủ'],['5.4','hồ sơ bằng chứng xuất cho kiểm toán']],
+    bda:[['GĐ4 FR-06','Checklist tuân thủ, phát hiện không phù hợp, kế hoạch khắc phục, lưu bằng chứng'],['GĐ4 §5.4','Kết quả đánh giá và kế hoạch khắc phục']] },
+]},
+{ id:'m7', num:'⑦', en:'MASTER DATA (MDM)', vn:'Dữ liệu chủ', color:'var(--m7)', menus:[
+  { code:'7.1', name:'Mô hình dữ liệu chủ', role:'khai', phase:'GĐ5',
+    purpose:'Định nghĩa cấu trúc bản ghi chuẩn cho từng loại dữ liệu chủ (khách hàng, sản phẩm, đơn vị, danh mục dùng chung): thuộc tính bắt buộc/tùy chọn, khóa định danh và khóa so khớp (CCCD, mã số thuế, số điện thoại), quy tắc chuẩn hóa giá trị, quy tắc sinh mã chuẩn, và thứ tự ưu tiên nguồn khai theo từng thuộc tính (tin nguồn A về địa chỉ, tin nguồn B về số điện thoại).',
+    declares:['Loại dữ liệu chủ và danh sách thuộc tính','Khóa định danh, khóa so khớp','Quy tắc chuẩn hóa, quy tắc sinh mã','Thứ tự ưu tiên nguồn theo từng thuộc tính'],
+    tabs:[],
+    inputs:[['1.1','bảng nguồn chứa dữ liệu chủ'],['1.2','hệ thống nguồn'],['2.1','định nghĩa thuật ngữ liên quan']],
+    outputs:[['7.2','cơ sở so khớp và quy tắc chọn giá trị khi hợp nhất']],
+    bda:[['GĐ5 FR-01','Mô hình dữ liệu chuẩn: thuộc tính bắt buộc, khóa định danh, quy tắc sinh mã'],['GĐ5 §5.1','Bộ trường mô hình dữ liệu chuẩn']] },
+  { code:'7.2', name:'Dữ liệu chủ', role:'cho', phase:'GĐ5',
+    purpose:'Quy trình 3 bước từ nhiều bản ghi rời rạc về một bản ghi chuẩn (Golden Record): (1) thu thập bản ghi từ các hệ thống nguồn và chuẩn hóa theo 7.1 — hệ thống chỉ đọc, không ghi ngược về nguồn; (2) so khớp và đưa danh sách nghi ngờ trùng kèm điểm tương đồng — người quyết định gộp hay không, hệ thống không tự hợp nhất, quyết định "không trùng" được ghi nhớ; (3) bản ghi chuẩn duy nhất có liên kết ngược về mọi mã nguồn, lịch sử thay đổi, và phân phối cho các hệ thống qua API / theo lô / theo sự kiện.',
+    declares:['Quyết định trên cặp nghi ngờ trùng: gộp / không trùng, chọn giá trị giữ lại từng trường','Quản lý bản ghi chuẩn và kênh phân phối'],
+    tabs:[['Bản ghi nguồn','Bản ghi từ các hệ thống, giá trị gốc và sau chuẩn hóa'],['Nghi ngờ trùng','Cặp nghi ngờ kèm điểm tương đồng, người xem xét quyết định'],['Bản ghi chuẩn & Phân phối','Golden Record, liên kết ngược mã nguồn, lịch sử, kênh phân phối']],
+    inputs:[['7.1','mô hình và quy tắc so khớp'],['4.2','đường thu thập bản ghi nguồn'],['3.2','luật chất lượng áp cho dữ liệu chủ']],
+    outputs:[['1.2','mã chuẩn phân phối cho các hệ thống'],['8.1','tỷ lệ trùng đã xử lý']],
+    bda:[['GĐ5 FR-02','Thu thập và chuẩn hóa từ nhiều nguồn'],['GĐ5 FR-03','Phát hiện trùng — không tự hợp nhất khi chưa xác nhận'],['GĐ5 FR-04','Golden Record: hợp nhất, liên kết ngược, lịch sử'],['GĐ5 FR-05','Phân phối qua API / lô / sự kiện'],['GĐ5 §6','Quy trình và 4 trạng thái bản ghi nghi ngờ trùng']] },
+]},
+{ id:'m8', num:'⑧', en:'OPERATIONS', vn:'Vận hành hệ thống', color:'var(--m8)', menus:[
+  { code:'8.1', name:'Sức khỏe dữ liệu', role:'xem', phase:'Nền tảng',
+    purpose:'Dashboard tổng hợp cho cấp quản lý, tổng hợp số liệu từ 7 module: độ phủ danh mục (tỷ lệ bảng đã khai), độ hoàn thiện metadata (tỷ lệ có mô tả, có đầu mối, đã phê duyệt), điểm chất lượng hiển thị kèm tỷ lệ bảng đang được kiểm, sự cố đang mở và thời gian xử lý, độ phủ truy vết, quyền quá hạn chưa thu hồi, điểm tuân thủ, tỷ lệ bản ghi trùng đã xử lý — đúng bộ tiêu chí đánh giá kết quả trong Phương án BDA §9. Kèm tiến độ triển khai theo 5 giai đoạn.',
+    declares:[],
+    tabs:[['Tổng quan','Bộ chỉ số quản trị toàn hệ thống'],['Độ phủ','Mức bao phủ danh mục, metadata, luật, truy vết'],['Theo miền','Cùng bộ chỉ số cắt theo miền dữ liệu']],
+    inputs:[['1.1','độ phủ danh mục'],['3.2','chỉ số chất lượng'],['3.3','sự cố'],['2.3','độ phủ truy vết'],['5.2','quyền quá hạn'],['6.3','điểm tuân thủ'],['7.2','tỷ lệ trùng đã xử lý']],
+    outputs:[],
+    bda:[['Phương án §9','7 nhóm tiêu chí đánh giá kết quả'],['GĐ2–GĐ5 §8/§10','Chỉ số đo lường mức độ hoàn thiện từng giai đoạn']] },
+  { code:'8.2', name:'Cấu hình hệ thống', role:'nen', phase:'Nền tảng',
+    purpose:'Thiết lập dùng chung toàn hệ thống, khai một lần lúc dựng: kết nối tới hệ thống nguồn (máy chủ, cổng, xác thực), định nghĩa mức quan trọng của bảng (Tier — mức nào bắt buộc khai trường gì, hạn xử lý sự cố bao lâu), chuẩn đặt tên (biểu thức kiểm tên bảng/cột/job ngay lúc tạo), tham số hệ thống (ngưỡng cảnh báo, thời gian lưu nhật ký, chu kỳ rà soát quyền) và bộ tiêu chuẩn thông tin mô tả (danh sách trường chuẩn từng loại đối tượng — căn cứ tính độ hoàn thiện metadata).',
+    declares:['Kết nối nguồn','Định nghĩa Tier và ràng buộc theo Tier','Chuẩn đặt tên','Tham số hệ thống','Bộ tiêu chuẩn thông tin mô tả'],
+    tabs:[['Kết nối','Máy chủ, cổng, xác thực — dùng bởi 4.2'],['Tier','Định nghĩa mức quan trọng — ràng buộc khi khai bảng ở 1.1'],['Chuẩn đặt tên','Biểu thức kiểm tên đối tượng'],['Tham số','Ngưỡng và chu kỳ toàn cục'],['Tiêu chuẩn thông tin mô tả','Bộ trường chuẩn theo loại đối tượng — kết quả GĐ1']],
+    inputs:[],
+    outputs:[['1.1','ràng buộc bắt buộc khi khai bảng'],['4.2','kết nối nguồn'],['3.2','tham số ngưỡng toàn cục']],
+    bda:[['GĐ1 §2.4','Bộ tiêu chuẩn thông tin mô tả dữ liệu'],['GĐ1 §2.5','Yêu cầu kết nối nguồn và phân quyền theo vai trò']] },
+]},
+];
+
+/* GĐ requirements data */
+const GDS = [
+{ id:'GĐ1', title:'Khảo sát và chuẩn bị nền tảng quản trị dữ liệu', en:'Assessment & Data Governance Foundation',
+  goal:'Giai đoạn chuẩn bị, không phải chức năng phần mềm. Kết quả của GĐ1 trở thành dữ liệu khởi tạo của hệ thống: danh sách hệ thống nạp vào 1.2, mô hình vai trò nạp vào 5.1, bộ tiêu chuẩn metadata nạp vào 8.2, phạm vi thí điểm quyết định thứ tự khai báo.',
+  frs:[
+    ['§2.1','Rà soát hiện trạng: tổng hợp hệ thống, nguồn dữ liệu, bảng, job, báo cáo, chỉ tiêu hiện có', ['1.2']],
+    ['§2.2','Xác định phạm vi thí điểm theo 7 nhóm đối tượng trọng yếu', []],
+    ['§2.3','Mô hình vai trò: người sở hữu dữ liệu, đầu mối nghiệp vụ, đầu mối kỹ thuật, đơn vị vận hành, người sử dụng', ['5.1']],
+    ['§2.4','Bộ tiêu chuẩn thông tin mô tả (metadata) cho 7 nhóm đối tượng', ['8.2']],
+    ['§2.5','Kiến trúc tổng thể, phương án tích hợp và kế hoạch triển khai', []],
+  ]},
+{ id:'GĐ2', title:'Danh mục, thông tin mô tả và truy vết dữ liệu', en:'Data Catalog, Metadata Management & Data Lineage',
+  goal:'Quản lý tập trung 7 nhóm đối tượng: hệ thống và nơi lưu trữ, bảng và cột, job và tiến trình xử lý, kênh trao đổi, báo cáo và chỉ tiêu, thuật ngữ nghiệp vụ, quan hệ luồng dữ liệu. Kèm bộ trường thông tin chuẩn cho từng nhóm (§5) và quy trình phê duyệt 5 trạng thái (§8).',
+  frs:[
+    ['FR-01','Quản lý danh mục dữ liệu: thêm/sửa/ngừng sử dụng đối tượng, liên kết giữa các đối tượng, gắn lĩnh vực và người phụ trách', ['1.1','1.2','1.3','1.4']],
+    ['FR-02','Quản lý metadata nghiệp vụ, kỹ thuật, vận hành theo bộ chuẩn; theo dõi mức độ đầy đủ; trạng thái và phiên bản', ['1.1','8.2','2.4']],
+    ['FR-03','Business Glossary: thuật ngữ, định nghĩa, công thức, liên kết với bảng/cột/báo cáo, trạng thái phê duyệt', ['2.1']],
+    ['FR-04','Tìm kiếm theo tên, hệ thống, lĩnh vực, người phụ trách; lọc theo loại, mức quan trọng, trạng thái', ['1.1']],
+    ['FR-05','Quản lý thay đổi và phê duyệt: lưu trước/sau, gửi duyệt, yêu cầu chỉnh sửa, theo dõi phiên bản hiệu lực', ['2.4']],
+    ['FR-06','Data Lineage đa mức (hệ thống, bảng, cột, nghiệp vụ); thu tự động từ SQL/ETL/Spark + khai thủ công; phân tích ảnh hưởng', ['2.3','4.1','1.3']],
+    ['§5','Bộ trường thông tin chuẩn cho 7 nhóm đối tượng — đầu vào thiết kế data model', ['1.1','1.2','1.3','4.1','2.1','2.3']],
+    ['§7','4 phương thức cập nhật: thu tự động, nhập trực tiếp, tải file Excel/CSV, khai thủ công lineage', ['1.1','4.2','2.3']],
+  ]},
+{ id:'GĐ3', title:'Quản lý chất lượng dữ liệu', en:'Data Quality Management',
+  goal:'Kiểm soát chất lượng theo 6 chiều (Đầy đủ, Hợp lệ, Nhất quán, Không trùng lặp, Chính xác, Kịp thời) trên các đối tượng đã có trong danh mục; vòng đời lỗi khép kín từ phát hiện đến đóng.',
+  frs:[
+    ['FR-01','Xây dựng quy tắc kiểm tra: gắn đối tượng, điều kiện, mức nghiêm trọng', ['3.1','3.2']],
+    ['FR-02','Lập lịch và thực hiện kiểm tra: theo lịch, theo sự kiện (khi dữ liệu cập nhật), thủ công; lưu kết quả và dữ liệu lỗi', ['3.2','4.2']],
+    ['FR-03','Cảnh báo và phân công xử lý: thông báo đầu mối, tạo phiếu công việc, tự động phân công', ['3.3','3.4']],
+    ['FR-04','Theo dõi xử lý và đóng lỗi: trạng thái phiếu, kiểm tra lại trước khi đóng, lưu lịch sử', ['3.3']],
+    ['FR-05','Báo cáo chất lượng: dashboard theo hệ thống, lĩnh vực, đối tượng, người sở hữu, thời gian; tỷ lệ đạt, lỗi lặp lại, thời gian xử lý', ['3.2','8.1']],
+  ]},
+{ id:'GĐ4', title:'Phân loại, bảo mật và tuân thủ dữ liệu', en:'Data Classification, Security & Compliance',
+  goal:'Bảo vệ dữ liệu nhạy cảm và bảo đảm dữ liệu được sử dụng, chia sẻ, lưu trữ, xóa đúng quy định; lưu đủ bằng chứng phục vụ kiểm toán.',
+  frs:[
+    ['FR-01','Phân loại dữ liệu 4 mức: Công khai, Nội bộ, Mật, Hạn chế truy cập; thay đổi mức phải phê duyệt lại', ['2.2']],
+    ['FR-02','Nhận diện dữ liệu nhạy cảm: quét tự động theo tên cột và mẫu giá trị, xác nhận thủ công, gắn nhãn mức bảng/cột', ['2.2']],
+    ['FR-03','Quản lý quyền truy cập: yêu cầu kèm mục đích và thời hạn, phê duyệt trước khi cấp, tự thu hồi khi hết hạn', ['5.3','5.2']],
+    ['FR-04','Bảo vệ dữ liệu khi sử dụng: che/mã hóa theo quyền, hạn chế tải xuống mức Mật/Hạn chế, cảnh báo truy cập bất thường', ['5.2','5.4']],
+    ['FR-05','Chính sách và vòng đời: danh mục chính sách, thời gian sử dụng/lưu trữ/archive/điều kiện xóa, chia sẻ bên thứ ba', ['6.1','6.2']],
+    ['FR-06','Tuân thủ và bằng chứng: nhật ký truy cập, checklist đánh giá, phát hiện không phù hợp, kế hoạch khắc phục, lưu hồ sơ', ['5.4','6.3']],
+  ]},
+{ id:'GĐ5', title:'Quản lý dữ liệu chủ và mở rộng', en:'Master Data Management & Expansion',
+  goal:'Chuẩn hóa dữ liệu dùng chung (khách hàng, sản phẩm, đơn vị, danh mục) đang trùng lặp hoặc khác mã giữa các hệ thống; tạo bản ghi chuẩn duy nhất và phân phối lại; mở rộng phạm vi quản trị.',
+  frs:[
+    ['FR-01','Thiết kế mô hình dữ liệu chuẩn: thuộc tính bắt buộc, khóa định danh, quy tắc sinh mã', ['7.1']],
+    ['FR-02','Thu thập và chuẩn hóa dữ liệu từ các hệ thống nguồn về cùng khuôn dạng', ['7.2','4.2']],
+    ['FR-03','Phát hiện bản ghi trùng: so khớp theo khóa/thuộc tính tương đồng; không tự hợp nhất khi chưa xác nhận', ['7.2']],
+    ['FR-04','Tạo bản ghi chuẩn (Golden Record): hợp nhất, liên kết ngược bản ghi nguồn, lịch sử thay đổi', ['7.2']],
+    ['FR-05','Phân phối dữ liệu chuẩn qua API, theo lô hoặc theo sự kiện; bảo đảm đồng bộ phiên bản', ['7.2']],
+    ['FR-06','Mở rộng phạm vi quản trị: thêm hệ thống, lĩnh vực, chức năng nâng cao', ['8.1']],
+  ]},
+];
+
+/* flows */
+const FLOWS = [
+{ title:'F1 — Thiết lập nền móng (một lần, khi dựng hệ thống)',
+  desc:'Quản trị viên khai các danh mục nền trước khi người dùng nghiệp vụ vào khai báo. Thứ tự bắt buộc vì các menu sau tham chiếu menu trước.',
+  steps:[['8.2','Khai kết nối nguồn, định nghĩa Tier, chuẩn đặt tên'],['5.1','Tạo tài khoản, gán 5 vai trò'],['1.2','Khai hệ thống nguồn và kênh trao đổi'],['1.4','Chia miền dữ liệu, gán người chịu trách nhiệm'],['1.5','Khai danh mục tham chiếu dùng chung'],['3.1','Khai thư viện mẫu luật chất lượng']] },
+{ title:'F2 — Đưa một bảng vào quản trị',
+  desc:'Vòng khai báo tiêu chuẩn cho mỗi bảng mới; kết thúc bằng phê duyệt để metadata có hiệu lực.',
+  steps:[['1.1','Khai bảng, cột; gán hệ thống, miền, Tier, đầu mối'],['2.1','Gắn thuật ngữ nghiệp vụ vào cột'],['2.2','Gắn nhãn nhạy cảm, mức phân loại'],['2.4','Gửi phê duyệt — người sở hữu dữ liệu duyệt'],['3.2','Gán luật chất lượng, đặt ngưỡng và lịch chạy']] },
+{ title:'F3 — Vòng đời lỗi chất lượng (hệ thống tự vận hành)',
+  desc:'Sau khi gán luật, không ai phải theo dõi thủ công: hệ thống chạy kiểm tra, sinh việc, đôn đốc và tổng hợp.',
+  steps:[['3.2','Luật chạy theo lịch hoặc ngay sau khi job ghi xong'],['auto','Phát hiện vi phạm ngưỡng'],['3.3','Phiếu sự cố tự sinh, tự gán đầu mối, có hạn xử lý'],['3.4','Thông báo gửi theo vai trò qua kênh cấu hình'],['3.3','Xử lý → hệ thống chạy lại luật xác nhận → duyệt đóng (4 mắt)'],['8.1','Chỉ số chất lượng, thời gian xử lý cập nhật lên dashboard']] },
+{ title:'F4 — Nạp dữ liệu có kiểm soát tại cửa',
+  desc:'Mọi đường dữ liệu vào (upload, SFTP, API, Kafka) đi qua cổng chất lượng trước khi ghi vào bảng.',
+  steps:[['1.2','Kênh trao đổi đã khai (nguồn, xác thực)'],['4.2','Lô dữ liệu đến — luật kiểm chạy trên vùng chờ trước khi ghi'],['auto','Đạt: ghi vào bảng đích, cập nhật độ tươi ở 1.1'],['4.2','Không đạt: chặn lô / tách dòng lỗi vào vùng chờ'],['3.3','Sự cố mở cho lô bị chặn'],['4.3','Ca trực giám sát pipeline và nhánh đang hỏng']] },
+{ title:'F5 — Xin quyền truy cập dữ liệu nhạy cảm',
+  desc:'Quy trình cấp quyền có dấu vết đầy đủ: mục đích, thời hạn, người duyệt, chính sách sinh ra và nhật ký.',
+  steps:[['5.3','Người dùng gửi yêu cầu: đối tượng + mục đích + thời hạn'],['auto','Hệ thống định tuyến đến người sở hữu dữ liệu'],['5.3','Duyệt toàn phần / có giới hạn / từ chối'],['5.2','Chính sách sinh ra kèm mã yêu cầu; che và lọc dòng áp theo nhãn'],['5.4','Mọi truy cập ghi nhật ký kèm chính sách quyết định'],['auto','Hết hạn: quyền tự thu hồi, nhắc gia hạn trước hạn']] },
+{ title:'F6 — Truy vết và phân tích ảnh hưởng',
+  desc:'Lineage hình thành tự động từ khai báo job; dùng để trả lời "sửa bảng này thì báo cáo nào bị ảnh hưởng".',
+  steps:[['4.1','Khai job: bước SQL, bảng đích chọn từ danh mục'],['auto','Hệ thống phân tích SQL, sinh quan hệ nguồn → job → đích'],['1.3','Khai báo cáo, chỉ tiêu trỏ về bảng nguồn'],['2.3','Bản đồ luồng hoàn chỉnh: kênh → bảng → job → báo cáo'],['2.3','Phân tích ảnh hưởng: chọn bảng → danh sách báo cáo, chỉ tiêu, người dùng bị ảnh hưởng']] },
+{ title:'F7 — Hợp nhất dữ liệu chủ (GĐ5)',
+  desc:'Từ bản ghi trùng lặp ở nhiều hệ thống về một bản ghi chuẩn duy nhất; con người quyết định, hệ thống không tự gộp.',
+  steps:[['7.1','Định nghĩa mô hình chuẩn, khóa so khớp, ưu tiên nguồn'],['4.2','Thu thập bản ghi từ các hệ thống nguồn'],['7.2','Chuẩn hóa; hệ thống so khớp, đưa danh sách nghi ngờ trùng kèm điểm'],['7.2','Người xem xét quyết định gộp / không trùng'],['7.2','Bản ghi chuẩn tạo ra, giữ liên kết ngược mã nguồn'],['auto','Phân phối mã chuẩn cho các hệ thống qua API / lô / sự kiện']] },
+{ title:'F8 — Từ yêu cầu nghiệp vụ tới báo cáo',
+  desc:'Hiện nay BDA nhận yêu cầu trên Jira rồi mất khoảng 4 ngày xác định dùng bảng nào, trước khi viết dòng SQL đầu tiên. Luồng dưới đưa phần đi tìm đó thành bản phân tích hệ thống dựng sẵn. Bước viết job và dựng biểu đồ vẫn do người làm.',
+  steps:[['5.3','Yêu cầu từ Jira đồng bộ về, gắn người tiếp nhận'],['auto','Đối chiếu danh mục bảng, quan hệ luồng, điểm chất lượng và các yêu cầu đã xử lý'],['5.3','Bản phân tích phương án: nguồn dữ liệu · cách liên kết · cách tính · rào cản'],['1.1','BDA kiểm bảng đề xuất, loại bảng không phù hợp — mỗi mục dẫn được về nguồn'],['4.1','Viết job: trình soạn tra cứu metadata tại chỗ, cảnh báo nếu dùng bảng đã ngừng nạp'],['1.3','Khai báo cáo và chỉ tiêu; DMP cấp bộ dữ liệu kèm lớp ngữ nghĩa'],['auto','Tableau / VDSD kéo bộ dữ liệu vào dựng biểu đồ như hiện nay']] },
+];
+
+/* ==================== HELPERS ==================== */
+const MENU_INDEX = {};
+MODULES.forEach(m => m.menus.forEach(x => MENU_INDEX[x.code] = {menu:x, mod:m}));
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function chipFor(code, extraCls){
+  const e = MENU_INDEX[code];
+  if(!e) return '';
+  return `<span class="chip mchip ${extraCls||''}" data-goto="${code}" style="color:${e.mod.color}"><span class="cd">${code}</span> ${esc(e.menu.name)}</span>`;
+}
+
+/* ==================== RENDER: role legend ==================== */
+document.getElementById('role-legend').innerHTML =
+  Object.values(ROLES).map(r=>`<span class="chip" style="color:${r.color}">● ${r.label}</span>`).join('');
+
+/* ==================== RENDER: requirements accordions ==================== */
+document.getElementById('gd-list').innerHTML = GDS.map((g,i)=>`
+  <div class="card acc ${i===1?'open':''}">
+    <button class="acc-head">
+      <span class="gd">${g.id}</span>
+      <span class="ttl">${esc(g.title)} <span class="en">· ${esc(g.en)}</span></span>
+      <span class="tw">›</span>
+    </button>
+    <div class="acc-body">
+      <div class="gd-goal">${esc(g.goal)}</div>
+      ${g.frs.map(f=>`
+        <div class="fr">
+          <div class="frid">${f[0]}</div>
+          <div>${esc(f[1])}</div>
+          <div class="frmenus">${f[2].length? f[2].map(c=>chipFor(c)).join('') : '<span class="chip phasechip">đầu việc khảo sát</span>'}</div>
+        </div>`).join('')}
+    </div>
+  </div>`).join('');
+document.querySelectorAll('.acc-head').forEach(b=>b.addEventListener('click',()=>b.parentElement.classList.toggle('open')));
+
+/* ==================== RENDER: system map ==================== */
+const modlist = document.getElementById('modlist');
+modlist.innerHTML = MODULES.map(m=>`
+  <div class="card mod" id="mod-${m.id}" style="--mc:${m.color}">
+    <button class="mod-head" data-mod="${m.id}">
+      <span class="num">${m.num}</span>
+      <span class="nm"><div class="en">${esc(m.en)}</div><div class="vn">${esc(m.vn)}</div></span>
+      <span class="ct">${m.menus.length} menu</span>
+    </button>
+    <div class="mod-menus">
+      ${m.menus.map(x=>`
+        <button class="mitem" data-menu="${x.code}" style="--mc:${m.color}">
+          <span class="cd">${x.code}</span>
+          <span style="flex:1">${esc(x.name)}</span>
+          <span class="dot" style="background:${ROLES[x.role].color}" title="${ROLES[x.role].label}"></span>
+        </button>`).join('')}
+    </div>
+  </div>`).join('');
+
+function openModule(id, on){
+  const el = document.getElementById('mod-'+id);
+  if(el) el.classList.toggle('open', on===undefined? !el.classList.contains('open') : on);
+}
+modlist.querySelectorAll('.mod-head').forEach(b=>b.addEventListener('click',()=>openModule(b.dataset.mod)));
+
+function renderDetail(code){
+  const e = MENU_INDEX[code]; if(!e) return;
+  const {menu:x, mod:m} = e;
+  const det = document.getElementById('detail');
+  det.innerHTML = `
+    <div class="det-head" style="--mc:${m.color}">
+      <div class="crumb">${m.num} ${esc(m.en)}</div>
+      <h3><span class="cd">${x.code}</span>${esc(x.name)}</h3>
+      <div class="det-badges">
+        <span class="chip rolechip" style="color:${ROLES[x.role].color}">● ${ROLES[x.role].label}</span>
+        <span class="chip phasechip">Phục vụ ${x.phase}</span>
+      </div>
+    </div>
+    <div class="det-body" style="--mc:${m.color}">
+      <h4>Chức năng</h4>
+      <p class="det-purpose">${esc(x.purpose)}</p>
+      ${x.declares.length?`<h4>Thông tin khai báo / quản lý</h4><ul class="plain">${x.declares.map(d=>`<li>${esc(d)}</li>`).join('')}</ul>`:''}
+      ${x.tabs.length?`<h4>Các tab</h4>${x.tabs.map(t=>`<div class="tabrow"><div class="tn">${esc(t[0])}</div><div>${esc(t[1])}</div></div>`).join('')}`:''}
+      <h4>Quan hệ với menu khác</h4>
+      <div class="io">
+        <div><div class="iohead">Nhận từ — cần khai trước</div>
+          <div class="iolist">${x.inputs.length? x.inputs.map(i=>`<div class="iorow">${chipFor(i[0])}<span class="why">${esc(i[1])}</span></div>`).join('') : '<div class="iorow"><span class="why">Không phụ thuộc menu nào — khai độc lập</span></div>'}</div>
+        </div>
+        <div><div class="iohead">Cấp cho — khai xong dùng ở đâu</div>
+          <div class="iolist">${x.outputs.length? x.outputs.map(o=>`<div class="iorow">${chipFor(o[0])}<span class="why">${esc(o[1])}</span></div>`).join('') : '<div class="iorow"><span class="why">Màn tổng hợp — chỉ đọc số liệu</span></div>'}</div>
+        </div>
+      </div>
+      <h4>Đáp ứng yêu cầu BDA</h4>
+      <div class="bda-list">${x.bda.map(b=>`<div class="b"><span class="ref">${b[0]}</span><span>${esc(b[1])}</span></div>`).join('')}</div>
+      ${x.extra?`<h4>Chức năng bổ sung</h4><p class="det-purpose" style="font-size:.88rem">${esc(x.extra)}</p>`:''}
+      ${x.ai?`<div class="aibox"><span class="aichip">ỨNG DỤNG AI</span><ul class="plain" style="margin-top:9px">${x.ai.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>`:''}
+      ${x.open?`<div class="openbox"><b>Cần chốt</b><br>${esc(x.open)}</div>`:''}
+    </div>`;
+  modlist.querySelectorAll('.mitem').forEach(b=>b.classList.toggle('on', b.dataset.menu===code));
+  openModule(m.id, true);
+}
+modlist.addEventListener('click', ev=>{
+  const b = ev.target.closest('.mitem');
+  if(b){ renderDetail(b.dataset.menu); }
+});
+
+/* ==================== RENDER: flows ==================== */
+document.getElementById('flow-list').innerHTML = FLOWS.map(f=>`
+  <div class="card flow">
+    <h3>${esc(f.title)}</h3>
+    <div class="fd">${esc(f.desc)}</div>
+    <div class="steps-wrap"><div class="steps">
+      ${f.steps.map((s,i)=>{
+        const arrow = i? '<div class="sarrow">→</div>' : '';
+        if(s[0]==='auto') return `${arrow}<div class="step auto"><div class="scd">HỆ THỐNG</div><div class="sl">${esc(s[1])}</div></div>`;
+        const e = MENU_INDEX[s[0]];
+        return `${arrow}<div class="step" data-goto="${s[0]}" style="--sc:${e.mod.color}"><div class="scd">${s[0]} · ${esc(e.menu.name)}</div><div class="sl">${esc(s[1])}</div></div>`;
+      }).join('')}
+    </div></div>
+  </div>`).join('');
+
+/* ==================== NAV ==================== */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.toggle('on', p.id==='page-'+id));
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on', b.dataset.page===id));
+  window.scrollTo({top:0});
+}
+document.getElementById('nav').addEventListener('click', ev=>{
+  const b = ev.target.closest('button'); if(b) showPage(b.dataset.page);
+});
+/* global goto: any element with data-goto jumps to map + opens menu */
+document.body.addEventListener('click', ev=>{
+  const g = ev.target.closest('[data-goto]');
+  if(g){ showPage('map'); renderDetail(g.dataset.goto); }
+});
+/* open first module by default */
+openModule('m1', true);
+</script>
+</body>
+</html>

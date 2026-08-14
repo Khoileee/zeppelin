@@ -314,7 +314,7 @@ Người dùng được gán tag ở màn "Phân quyền truy cập dữ liệu"
 **Cấu hình thật trong `application.properties`:**
 
 ```properties
-opa-collector.base=http://10.58.244.169:9123
+opa-collector.base=http://<máy chủ nội bộ>:9123
 opa-collector.sync-blacklist.table.endpoint=/api/table/sync/
 opa-collector.sync-blacklist.username.endpoint=/api/function/sync/username/
 opa-collector.sync-blacklist.tagId.endpoint=/api/function/sync/tag/
@@ -334,7 +334,7 @@ opa-collector.sync-blacklist.tagId.endpoint=/api/function/sync/tag/
 >
 > Không tồn tại bất kỳ trường nào kiểu `maskType` / `maskOption` / `rowFilter` trong toàn bộ mã nguồn — trong khi che dữ liệu bắt buộc phải có *(cột nào, nhóm nào, che kiểu gì)*.
 
-**Phần chưa trả lời được:** luật thực thi cuối cùng nằm trong **OPA Collector** — một service riêng ở `10.58.244.169:9123`, **không có mã nguồn trong workspace này**. Muốn biết chính xác người thiếu nhãn `PD_SENSITIVE` thì bị chặn cả bảng hay chỉ chặn vài hàm, phải xem repo của OPA Collector.
+**Phần chưa trả lời được:** luật thực thi cuối cùng nằm trong **OPA Collector** — một service riêng ở `<máy chủ nội bộ>:9123`, **không có mã nguồn trong workspace này**. Muốn biết chính xác người thiếu nhãn `PD_SENSITIVE` thì bị chặn cả bảng hay chỉ chặn vài hàm, phải xem repo của OPA Collector.
 
 **Ảnh hưởng tới đề xuất:**
 
